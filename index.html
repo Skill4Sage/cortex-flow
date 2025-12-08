@@ -52,15 +52,15 @@
         .btn-press:active { transform: scale(0.96); transition: transform 0.1s; }
 
         /* Stili per la Casetta e Animazioni Persone */
-        .house { position: relative; width: 140px; height: 100px; margin: 0 auto; margin-top: 40px; }
+        .house { position: relative; width: 140px; height: 100px; margin: 0 auto; margin-top: 60px; z-index: 10; }
         .roof { position: absolute; top: -50px; left: -10px; width: 0; height: 0; border-left: 80px solid transparent; border-right: 80px solid transparent; border-bottom: 50px solid #475569; }
-        .walls { width: 100%; height: 100%; background: #1e293b; border: 4px solid #475569; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .walls { width: 100%; height: 100%; background: #1e293b; border: 4px solid #475569; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 10; }
         .door { width: 40px; height: 65px; background: #0f172a; bottom: 0; left: 50%; transform: translateX(-50%); position: absolute; border: 2px solid #334155; border-bottom: none; border-radius: 2px 2px 0 0; }
         
         /* Animazione Entrata: Da sinistra verso il centro (porta) */
         @keyframes walkIn { 
-            0% { transform: translateX(-160px); opacity: 0; } 
-            20% { opacity: 1; }
+            0% { transform: translateX(-180px); opacity: 0; } 
+            10% { opacity: 1; }
             80% { opacity: 1; transform: translateX(-10px) scale(0.95); }
             100% { transform: translateX(0) scale(0.8); opacity: 0; } 
         }
@@ -69,13 +69,12 @@
         @keyframes walkOut { 
             0% { transform: translateX(0) scale(0.8); opacity: 0; } 
             20% { opacity: 1; transform: translateX(10px) scale(0.95); }
-            80% { opacity: 1; }
-            100% { transform: translateX(160px); opacity: 0; } 
+            90% { opacity: 1; }
+            100% { transform: translateX(180px); opacity: 0; } 
         }
 
-        .walker { position: absolute; bottom: 0; left: 50%; /* center origin */ }
-        .anim-in { animation: walkIn 1.4s linear forwards; }
-        .anim-out { animation: walkOut 1.4s linear forwards; }
+        .walker { position: absolute; bottom: 0; left: 50%; width: 32px; height: 32px; margin-left: -16px; z-index: 20; }
+        /* Le classi anim-in/out sono applicate via JS con durata dinamica */
 
     </style>
 </head>
@@ -234,40 +233,46 @@
             );
         };
 
-        // --- Gioco 3: Cortex House (NUOVO VISUALE) ---
+        // --- Gioco 3: Cortex House (Corretto e Ottimizzato) ---
         const LogicGame = ({ onComplete, difficulty }) => {
-            const [step, setStep] = useState(0); 
-            const [total, setTotal] = useState(0);
-            const [ans, setAns] = useState("");
-            const [people, setPeople] = useState([]); // { id, type: 'in'|'out', gender: 'm'|'f' }
+            const [stage, setStage] = useState('watch');
+            const [round, setRound] = useState(1);
+            const [score, setScore] = useState(0);
+            const [peopleInside, setPeopleInside] = useState(0);
+            const [userAnswer, setUserAnswer] = useState("");
+            const [people, setPeople] = useState([]);
+            const [status, setStatus] = useState("idle");
 
-            useEffect(() => {
+            const TOTAL_ROUNDS = 5;
+
+            useEffect(() => { startRound(); }, []);
+
+            const startRound = () => {
+                setStage('watch');
+                setUserAnswer("");
+                setStatus("idle");
+                setPeople([]);
+                
                 let curr = 0;
                 let events = [];
-                const count = 5 + (difficulty * 2);
+                const count = 3 + (difficulty * 2);
                 
-                // Genera timeline eventi
                 for(let i=0; i<count; i++) {
                     const enter = Math.random() > 0.4 || curr === 0;
                     const val = Math.floor(Math.random() * 3) + 1;
-                    if(enter){ 
-                        curr += val; 
-                        events.push({t:'in', v:val}); 
-                    } else { 
-                        const r = Math.min(curr, val); 
-                        curr -= r; 
-                        events.push({t:'out', v:r}); 
-                    }
+                    if(enter){ curr += val; events.push({t:'in', v:val}); } 
+                    else { const r = Math.min(curr, val); curr -= r; events.push({t:'out', v:r}); }
                 }
-                setTotal(curr);
+                setPeopleInside(curr);
 
                 let i = 0;
-                const intervalTime = 2000 - (difficulty * 200);
-
+                // Velocità animazione basata sulla difficoltà: più difficile = più veloce
+                const speedMs = Math.max(800, 2000 - (difficulty * 200)); 
+                
                 const int = setInterval(() => {
                     if (i >= events.length) {
                         clearInterval(int);
-                        setTimeout(() => setStep(1), 1500); // Wait for last anim
+                        setTimeout(() => setStage('answer'), speedMs + 500); 
                         return;
                     }
                     
@@ -275,50 +280,67 @@
                     const newBatch = [];
                     for(let p=0; p<ev.v; p++) {
                         newBatch.push({
-                            id: `p-${i}-${p}`,
+                            id: `p-${round}-${i}-${p}`,
                             type: ev.t,
                             gender: Math.random() > 0.5 ? 'm' : 'f',
-                            delay: p * 0.2 // Stagger animations
+                            delay: p * 0.2,
+                            duration: speedMs / 1000 // Durata in secondi per CSS
                         });
                     }
-                    
                     setPeople(newBatch);
-                    
-                    // Clear people after animation finishes to reset for next batch
-                    setTimeout(() => setPeople([]), intervalTime - 100);
-
+                    // Puliamo l'array prima che arrivi il prossimo gruppo per evitare sovrapposizioni
+                    setTimeout(() => setPeople([]), speedMs - 50);
                     i++;
-                }, intervalTime);
-                
-                return () => clearInterval(int);
-            }, []);
+                }, speedMs);
+            };
 
-            if(step===0) return (
-                <div className="flex flex-col items-center justify-center h-full animate-enter relative overflow-hidden">
-                    <div className="text-xl font-bold text-slate-400 mb-8">Osserva attentamente...</div>
+            const submit = () => {
+                if (status !== 'idle') return;
+
+                const isCorrect = parseInt(userAnswer) === peopleInside;
+                setStatus(isCorrect ? 'correct' : 'error');
+
+                setTimeout(() => {
+                    let newTotalScore = score;
+                    if (isCorrect) newTotalScore += (100 * difficulty);
                     
-                    {/* Casa Stilizzata */}
+                    if (round < TOTAL_ROUNDS) {
+                        setScore(newTotalScore);
+                        setRound(r => r + 1);
+                        startRound();
+                    } else {
+                        onComplete(newTotalScore);
+                    }
+                }, 1500); // Tempo per vedere il feedback
+            };
+
+            const cardClass = status === "correct" ? "border-green-500 bg-green-900/20" : 
+                              status === "error" ? "border-red-500 bg-red-900/20 animate-shake" : "";
+            const textClass = status === "correct" ? "text-green-400" : 
+                              status === "error" ? "text-red-400" : "text-indigo-400";
+
+            if(stage === 'watch') return (
+                <div className="flex flex-col items-center justify-center h-full animate-enter relative overflow-hidden">
+                    <div className="flex justify-between w-full mb-4 px-2 font-bold text-slate-400 text-sm">
+                        <span>ROUND {round}/{TOTAL_ROUNDS}</span>
+                        <span className="text-indigo-400">PUNTI: {score}</span>
+                    </div>
+                    <div className="text-xl font-bold text-slate-300 mb-8 absolute top-16">Osserva la casa...</div>
                     <div className="house">
                         <div className="roof"></div>
-                        <div className="walls">
-                            <div className="door"></div>
-                        </div>
+                        <div className="walls"><div className="door"></div></div>
                     </div>
-
-                    {/* Persone Animate */}
                     <div className="absolute inset-0 pointer-events-none">
                         {people.map((p) => (
                             <div 
                                 key={p.id} 
-                                className={`walker ${p.type === 'in' ? 'anim-in' : 'anim-out'}`}
-                                style={{ animationDelay: `${p.delay}s` }}
+                                className="walker" 
+                                style={{ 
+                                    animation: `${p.type === 'in' ? 'walkIn' : 'walkOut'} ${p.duration}s linear forwards`,
+                                    animationDelay: `${p.delay}s`
+                                }}
                             >
-                                <Icon 
-                                    name="user" 
-                                    size={32} 
-                                    color={p.gender === 'm' ? '#22d3ee' : '#e879f9'} // Ciano (M) / Rosa (F)
-                                    className="drop-shadow-lg"
-                                />
+                                <Icon name="user" size={32} color={p.gender === 'm' ? '#22d3ee' : '#e879f9'} className="drop-shadow-lg" />
                             </div>
                         ))}
                     </div>
@@ -327,12 +349,20 @@
 
             return (
                 <div className="flex flex-col h-full animate-enter">
-                    <h2 className="text-center text-xl mb-6">Quante persone sono rimaste?</h2>
-                    <div className="text-6xl text-center font-bold text-indigo-400 mb-8 min-h-[4rem]">{ans}_</div>
+                    <div className="flex justify-between w-full mb-4 px-2 font-bold text-slate-400 text-sm">
+                        <span>ROUND {round}/{TOTAL_ROUNDS}</span>
+                        <span className="text-indigo-400">PUNTI: {score}</span>
+                    </div>
+                    <h2 className="text-center text-xl mb-6 font-bold text-slate-200">Quante persone sono rimaste?</h2>
+                    <Card className={`mb-8 flex flex-col items-center justify-center transition-all duration-300 ${cardClass}`}>
+                        <div className={`text-6xl font-bold min-h-[4rem] transition-colors ${textClass}`}>{userAnswer}_</div>
+                        {status === "error" && <div className="text-red-400 font-bold text-sm animate-pulse mt-2">Sbagliato! Erano {peopleInside}</div>}
+                        {status === "correct" && <div className="text-green-400 font-bold text-sm animate-pulse mt-2">Corretto!</div>}
+                    </Card>
                     <div className="grid grid-cols-3 gap-3 mt-auto">
-                        {[1,2,3,4,5,6,7,8,9,0].map(n=><button key={n} onClick={()=>setAns(a=>a+n)} className="bg-slate-700 p-4 rounded-xl text-2xl font-bold btn-press">{n}</button>)}
-                        <button onClick={()=>setAns("")} className="bg-red-900/30 text-red-400 p-4 rounded-xl font-bold">C</button>
-                        <button onClick={()=>onComplete(parseInt(ans)===total?100*difficulty:0)} className="bg-green-600 text-white p-4 rounded-xl font-bold col-span-3">VERIFICA</button>
+                        {[1,2,3,4,5,6,7,8,9,0].map(n=><button key={n} onClick={()=>setUserAnswer(a=>a+n)} className="bg-slate-700 p-4 rounded-xl text-2xl font-bold btn-press">{n}</button>)}
+                        <button onClick={()=>setUserAnswer("")} className="bg-red-900/30 text-red-400 p-4 rounded-xl font-bold btn-press">C</button>
+                        <button onClick={submit} className="bg-green-600 text-white p-4 rounded-xl font-bold col-span-3 shadow-lg shadow-green-900/50 btn-press">CONFERMA</button>
                     </div>
                 </div>
             );
