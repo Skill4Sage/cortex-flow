@@ -50,6 +50,33 @@
         @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
 
         .btn-press:active { transform: scale(0.96); transition: transform 0.1s; }
+
+        /* Stili per la Casetta e Animazioni Persone */
+        .house { position: relative; width: 140px; height: 100px; margin: 0 auto; margin-top: 40px; }
+        .roof { position: absolute; top: -50px; left: -10px; width: 0; height: 0; border-left: 80px solid transparent; border-right: 80px solid transparent; border-bottom: 50px solid #475569; }
+        .walls { width: 100%; height: 100%; background: #1e293b; border: 4px solid #475569; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .door { width: 40px; height: 65px; background: #0f172a; bottom: 0; left: 50%; transform: translateX(-50%); position: absolute; border: 2px solid #334155; border-bottom: none; border-radius: 2px 2px 0 0; }
+        
+        /* Animazione Entrata: Da sinistra verso il centro (porta) */
+        @keyframes walkIn { 
+            0% { transform: translateX(-160px); opacity: 0; } 
+            20% { opacity: 1; }
+            80% { opacity: 1; transform: translateX(-10px) scale(0.95); }
+            100% { transform: translateX(0) scale(0.8); opacity: 0; } 
+        }
+        
+        /* Animazione Uscita: Dal centro (porta) verso destra */
+        @keyframes walkOut { 
+            0% { transform: translateX(0) scale(0.8); opacity: 0; } 
+            20% { opacity: 1; transform: translateX(10px) scale(0.95); }
+            80% { opacity: 1; }
+            100% { transform: translateX(160px); opacity: 0; } 
+        }
+
+        .walker { position: absolute; bottom: 0; left: 50%; /* center origin */ }
+        .anim-in { animation: walkIn 1.4s linear forwards; }
+        .anim-out { animation: walkOut 1.4s linear forwards; }
+
     </style>
 </head>
 <body>
@@ -106,13 +133,13 @@
             return <button onClick={onClick} disabled={disabled} className={`${base} ${styles[variant]} ${className}`}>{children}</button>;
         };
 
-        // --- Gioco 1: Calcoli Rapidi (MODIFICATO: 20 domande + Feedback) ---
+        // --- Gioco 1: Calcoli Rapidi ---
         const MathGame = ({ onComplete, difficulty }) => {
             const [q, setQ] = useState({ t: "", a: 0 });
             const [input, setInput] = useState("");
             const [count, setCount] = useState(1);
             const [score, setScore] = useState(0);
-            const [status, setStatus] = useState("idle"); // idle, correct, error
+            const [status, setStatus] = useState("idle"); 
             
             const TOTAL_QUESTIONS = 20;
 
@@ -129,52 +156,31 @@
 
             const check = () => {
                 if (status !== "idle") return;
-
                 if(parseInt(input) === q.a) { 
                     setStatus("correct");
-                    // Delay per feedback positivo
                     setTimeout(() => {
                         const newScore = score + (10 * difficulty);
                         setScore(newScore);
-                        if (count >= TOTAL_QUESTIONS) {
-                            onComplete(newScore);
-                        } else {
-                            setCount(c => c + 1);
-                            setInput("");
-                            setStatus("idle");
-                            gen();
-                        }
+                        if (count >= TOTAL_QUESTIONS) onComplete(newScore);
+                        else { setCount(c => c + 1); setInput(""); setStatus("idle"); gen(); }
                     }, 500);
                 } else { 
                     setStatus("error");
-                    // Delay per feedback negativo
-                    setTimeout(() => {
-                        setInput(""); 
-                        setStatus("idle");
-                    }, 600);
+                    setTimeout(() => { setInput(""); setStatus("idle"); }, 600);
                 } 
             };
 
-            // Colori dinamici in base allo stato
-            const cardClass = status === "correct" ? "border-green-500 bg-green-900/20" : 
-                              status === "error" ? "border-red-500 bg-red-900/20 animate-shake" : "";
-            
-            const inputColor = status === "correct" ? "text-green-400" : 
-                               status === "error" ? "text-red-400" : "text-indigo-400";
+            const cardClass = status === "correct" ? "border-green-500 bg-green-900/20" : status === "error" ? "border-red-500 bg-red-900/20 animate-shake" : "";
+            const inputColor = status === "correct" ? "text-green-400" : status === "error" ? "text-red-400" : "text-indigo-400";
 
             return (
                 <div className="flex flex-col h-full animate-enter">
-                    <div className="flex justify-between text-slate-400 font-mono mb-4 text-sm font-bold">
-                        <span>DOMANDA: {count}/{TOTAL_QUESTIONS}</span>
-                        <span className="text-indigo-400">PUNTI: {score}</span>
-                    </div>
-                    
+                    <div className="flex justify-between text-slate-400 font-mono mb-4 text-sm font-bold"><span>DOMANDA: {count}/{TOTAL_QUESTIONS}</span><span className="text-indigo-400">PUNTI: {score}</span></div>
                     <Card className={`mb-6 flex-grow flex flex-col items-center justify-center transition-all duration-300 ${cardClass}`}>
                         <div className="text-6xl font-bold mb-6">{q.t}</div>
                         <div className={`text-4xl h-10 font-bold transition-colors ${inputColor}`}>{input}_</div>
                         {status === "error" && <div className="mt-4 text-red-400 font-bold text-sm animate-pulse">Riprova!</div>}
                     </Card>
-                    
                     <div className="grid grid-cols-3 gap-3">
                         {[1,2,3,4,5,6,7,8,9].map(n=><button key={n} onClick={()=>setInput(i=>i+n)} className="bg-slate-700 p-4 rounded-xl text-2xl font-bold btn-press">{n}</button>)}
                         <button onClick={()=>setInput("")} className="bg-red-900/30 text-red-400 p-4 rounded-xl font-bold btn-press">C</button>
@@ -185,7 +191,7 @@
             );
         };
 
-        // --- Gioco 2: Synapse Sequence (Memoria) ---
+        // --- Gioco 2: Synapse Sequence ---
         const MemoryGame = ({ onComplete, difficulty }) => {
             const icons = ['zap', 'heart', 'star', 'moon', 'sun', 'music', 'anchor', 'cloud'];
             const [seq, setSeq] = useState([]);
@@ -228,37 +234,101 @@
             );
         };
 
-        // --- Gioco 3: Cortex House (Logica) ---
+        // --- Gioco 3: Cortex House (NUOVO VISUALE) ---
         const LogicGame = ({ onComplete, difficulty }) => {
             const [step, setStep] = useState(0); 
             const [total, setTotal] = useState(0);
-            const [txt, setTxt] = useState("Pronto?");
             const [ans, setAns] = useState("");
+            const [people, setPeople] = useState([]); // { id, type: 'in'|'out', gender: 'm'|'f' }
 
             useEffect(() => {
-                let curr = 0; let evs = [];
-                for(let i=0; i<5+(difficulty*2); i++) {
-                    const enter = Math.random()>0.4 || curr===0;
-                    const v = Math.floor(Math.random()*3)+1;
-                    if(enter){ curr+=v; evs.push({t:'in',v}); }
-                    else { const r = Math.min(curr,v); curr-=r; evs.push({t:'out',v:r}); }
+                let curr = 0;
+                let events = [];
+                const count = 5 + (difficulty * 2);
+                
+                // Genera timeline eventi
+                for(let i=0; i<count; i++) {
+                    const enter = Math.random() > 0.4 || curr === 0;
+                    const val = Math.floor(Math.random() * 3) + 1;
+                    if(enter){ 
+                        curr += val; 
+                        events.push({t:'in', v:val}); 
+                    } else { 
+                        const r = Math.min(curr, val); 
+                        curr -= r; 
+                        events.push({t:'out', v:r}); 
+                    }
                 }
                 setTotal(curr);
-                let i=0;
-                const int = setInterval(()=>{
-                    if(i>=evs.length){ clearInterval(int); setStep(1); return; }
-                    setTxt(evs[i].t==='in' ? `+${evs[i].v} Entrano` : `-${evs[i].v} Escono`);
+
+                let i = 0;
+                const intervalTime = 2000 - (difficulty * 200);
+
+                const int = setInterval(() => {
+                    if (i >= events.length) {
+                        clearInterval(int);
+                        setTimeout(() => setStep(1), 1500); // Wait for last anim
+                        return;
+                    }
+                    
+                    const ev = events[i];
+                    const newBatch = [];
+                    for(let p=0; p<ev.v; p++) {
+                        newBatch.push({
+                            id: `p-${i}-${p}`,
+                            type: ev.t,
+                            gender: Math.random() > 0.5 ? 'm' : 'f',
+                            delay: p * 0.2 // Stagger animations
+                        });
+                    }
+                    
+                    setPeople(newBatch);
+                    
+                    // Clear people after animation finishes to reset for next batch
+                    setTimeout(() => setPeople([]), intervalTime - 100);
+
                     i++;
-                }, 1500-(difficulty*200));
-                return ()=>clearInterval(int);
+                }, intervalTime);
+                
+                return () => clearInterval(int);
             }, []);
 
-            if(step===0) return <div className="flex flex-col items-center justify-center h-full animate-enter"><div className="text-3xl font-bold animate-pulse">{txt}</div></div>;
+            if(step===0) return (
+                <div className="flex flex-col items-center justify-center h-full animate-enter relative overflow-hidden">
+                    <div className="text-xl font-bold text-slate-400 mb-8">Osserva attentamente...</div>
+                    
+                    {/* Casa Stilizzata */}
+                    <div className="house">
+                        <div className="roof"></div>
+                        <div className="walls">
+                            <div className="door"></div>
+                        </div>
+                    </div>
+
+                    {/* Persone Animate */}
+                    <div className="absolute inset-0 pointer-events-none">
+                        {people.map((p) => (
+                            <div 
+                                key={p.id} 
+                                className={`walker ${p.type === 'in' ? 'anim-in' : 'anim-out'}`}
+                                style={{ animationDelay: `${p.delay}s` }}
+                            >
+                                <Icon 
+                                    name="user" 
+                                    size={32} 
+                                    color={p.gender === 'm' ? '#22d3ee' : '#e879f9'} // Ciano (M) / Rosa (F)
+                                    className="drop-shadow-lg"
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
 
             return (
                 <div className="flex flex-col h-full animate-enter">
-                    <h2 className="text-center text-xl mb-6">Quanti rimasti?</h2>
-                    <div className="text-6xl text-center font-bold text-indigo-400 mb-8">{ans}_</div>
+                    <h2 className="text-center text-xl mb-6">Quante persone sono rimaste?</h2>
+                    <div className="text-6xl text-center font-bold text-indigo-400 mb-8 min-h-[4rem]">{ans}_</div>
                     <div className="grid grid-cols-3 gap-3 mt-auto">
                         {[1,2,3,4,5,6,7,8,9,0].map(n=><button key={n} onClick={()=>setAns(a=>a+n)} className="bg-slate-700 p-4 rounded-xl text-2xl font-bold btn-press">{n}</button>)}
                         <button onClick={()=>setAns("")} className="bg-red-900/30 text-red-400 p-4 rounded-xl font-bold">C</button>
