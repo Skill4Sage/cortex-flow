@@ -106,7 +106,7 @@
             return <button onClick={onClick} disabled={disabled} className={`${base} ${styles[variant]} ${className}`}>{children}</button>;
         };
 
-        // --- Gioco 1: Calcoli Rapidi ---
+        // --- Gioco 1: Calcoli Rapidi (MODIFICATO: 20 domande + Feedback) ---
         const MathGame = ({ onComplete, difficulty }) => {
             const [q, setQ] = useState({ t: "", a: 0 });
             const [input, setInput] = useState("");
