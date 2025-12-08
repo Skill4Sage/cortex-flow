@@ -7,19 +7,14 @@
     <meta name="description" content="Allenamento cognitivo quotidiano">
     <meta name="theme-color" content="#0f172a">
     
-    <!-- Meta tags per simulare App Nativa su Android/iOS -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <!-- Icona App -->
     <link rel="icon" type="image/png" href="https://img.icons8.com/fluency/96/brain.png">
     <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/96/brain.png">
-
-    <!-- Manifest integrato per installazione PWA -->
     <link rel="manifest" href='data:application/manifest+json,{"name":"Cortex Flow","short_name":"Cortex","start_url":".","display":"standalone","background_color":"#0f172a","theme_color":"#0f172a","icons":[{"src":"https://img.icons8.com/fluency/192/brain.png","sizes":"192x192","type":"image/png"}]}'>
 
-    <!-- Librerie Core (React, Babel, Tailwind) -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -39,8 +34,6 @@
         }
 
         .font-mono { font-family: 'JetBrains Mono', monospace; }
-        
-        /* Animazioni fluide */
         .animate-enter { animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .animate-pop { animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .animate-shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
@@ -51,30 +44,58 @@
 
         .btn-press:active { transform: scale(0.96); transition: transform 0.1s; }
 
-        /* Stili per la Casetta e Animazioni Persone */
-        .house { position: relative; width: 140px; height: 100px; margin: 0 auto; margin-top: 60px; z-index: 10; }
-        .roof { position: absolute; top: -50px; left: -10px; width: 0; height: 0; border-left: 80px solid transparent; border-right: 80px solid transparent; border-bottom: 50px solid #475569; }
-        .walls { width: 100%; height: 100%; background: #1e293b; border: 4px solid #475569; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 10; }
-        .door { width: 40px; height: 65px; background: #0f172a; bottom: 0; left: 50%; transform: translateX(-50%); position: absolute; border: 2px solid #334155; border-bottom: none; border-radius: 2px 2px 0 0; }
-        
-        /* Animazione Entrata: Da sinistra verso il centro (porta) */
-        @keyframes walkIn { 
-            0% { transform: translateX(-180px); opacity: 0; } 
-            10% { opacity: 1; }
-            80% { opacity: 1; transform: translateX(-10px) scale(0.95); }
-            100% { transform: translateX(0) scale(0.8); opacity: 0; } 
+        /* STILI CASA MIGLIORATI */
+        .house-container { position: relative; width: 200px; height: 160px; margin: 0 auto; display: flex; justify-content: center; align-items: flex-end; z-index: 20; }
+        .roof { 
+            position: absolute; top: 0; 
+            width: 0; height: 0; 
+            border-left: 100px solid transparent; 
+            border-right: 100px solid transparent; 
+            border-bottom: 60px solid #cbd5e1; /* Tetto chiaro */
+            z-index: 20;
         }
-        
-        /* Animazione Uscita: Dal centro (porta) verso destra */
-        @keyframes walkOut { 
-            0% { transform: translateX(0) scale(0.8); opacity: 0; } 
-            20% { opacity: 1; transform: translateX(10px) scale(0.95); }
-            90% { opacity: 1; }
-            100% { transform: translateX(180px); opacity: 0; } 
+        .walls { 
+            width: 160px; height: 100px; 
+            background: #f1f5f9; /* Pareti chiare */
+            position: relative; 
+            z-index: 20;
+            display: flex; justify-content: center; align-items: flex-end;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .door { 
+            width: 50px; height: 70px; 
+            background: #1e293b; /* Porta scura (vuoto) */
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            z-index: 15; /* Sotto le pareti ma sopra lo sfondo */
         }
 
-        .walker { position: absolute; bottom: 0; left: 50%; width: 32px; height: 32px; margin-left: -16px; z-index: 20; }
-        /* Le classi anim-in/out sono applicate via JS con durata dinamica */
+        /* Animazioni Persone */
+        @keyframes moveIn {
+            0% { transform: translateX(-150px) scale(1); opacity: 0; }
+            10% { opacity: 1; }
+            80% { transform: translateX(0) scale(0.9); opacity: 1; } /* Arriva alla porta */
+            100% { transform: translateX(0) scale(0.8); opacity: 0; } /* Sparisce dentro */
+        }
+
+        @keyframes moveOut {
+            0% { transform: translateX(0) scale(0.8); opacity: 0; } /* Esce dalla porta */
+            20% { opacity: 1; transform: translateX(0) scale(0.9); }
+            100% { transform: translateX(150px) scale(1); opacity: 1; } /* Va via */
+        }
+
+        .person {
+            position: absolute; bottom: 0; left: 50%; margin-left: -16px;
+            width: 32px; height: 60px;
+            z-index: 10; /* Sotto la casa */
+            display: flex; flex-direction: column; align-items: center;
+        }
+        
+        .person-body { width: 16px; height: 24px; border-radius: 4px; }
+        .person-head { width: 12px; height: 12px; border-radius: 50%; margin-bottom: 2px; }
+        
+        .anim-enter { animation: moveIn 1.5s linear forwards; }
+        .anim-exit { animation: moveOut 1.5s linear forwards; }
 
     </style>
 </head>
@@ -84,7 +105,7 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        // --- Wrapper per Icone Lucide ---
+        // --- Icone ---
         const Icon = ({ name, size = 24, className = "", color = "currentColor" }) => {
             const iconRef = useRef(null);
             useEffect(() => {
@@ -117,7 +138,6 @@
             return [storedValue, setValue];
         };
 
-        // --- Componenti UI ---
         const Card = ({ children, className = "" }) => (
             <div className={`bg-slate-800/80 backdrop-blur-md border border-slate-700/50 rounded-2xl p-6 shadow-xl ${className}`}>{children}</div>
         );
@@ -132,15 +152,14 @@
             return <button onClick={onClick} disabled={disabled} className={`${base} ${styles[variant]} ${className}`}>{children}</button>;
         };
 
-        // --- Gioco 1: Calcoli Rapidi ---
+        // --- Gioco 1: Calcoli Rapidi (20 Domande) ---
         const MathGame = ({ onComplete, difficulty }) => {
             const [q, setQ] = useState({ t: "", a: 0 });
             const [input, setInput] = useState("");
             const [count, setCount] = useState(1);
             const [score, setScore] = useState(0);
-            const [status, setStatus] = useState("idle"); 
-            
-            const TOTAL_QUESTIONS = 20;
+            const [status, setStatus] = useState("idle");
+            const TOTAL = 20;
 
             useEffect(() => { gen(); }, []);
 
@@ -160,8 +179,8 @@
                     setTimeout(() => {
                         const newScore = score + (10 * difficulty);
                         setScore(newScore);
-                        if (count >= TOTAL_QUESTIONS) onComplete(newScore);
-                        else { setCount(c => c + 1); setInput(""); setStatus("idle"); gen(); }
+                        if (count >= TOTAL) onComplete(newScore);
+                        else { setCount(c => c+1); setInput(""); setStatus("idle"); gen(); }
                     }, 500);
                 } else { 
                     setStatus("error");
@@ -174,7 +193,7 @@
 
             return (
                 <div className="flex flex-col h-full animate-enter">
-                    <div className="flex justify-between text-slate-400 font-mono mb-4 text-sm font-bold"><span>DOMANDA: {count}/{TOTAL_QUESTIONS}</span><span className="text-indigo-400">PUNTI: {score}</span></div>
+                    <div className="flex justify-between text-slate-400 font-mono mb-4 text-sm font-bold"><span>DOMANDA: {count}/{TOTAL}</span><span className="text-indigo-400">PUNTI: {score}</span></div>
                     <Card className={`mb-6 flex-grow flex flex-col items-center justify-center transition-all duration-300 ${cardClass}`}>
                         <div className="text-6xl font-bold mb-6">{q.t}</div>
                         <div className={`text-4xl h-10 font-bold transition-colors ${inputColor}`}>{input}_</div>
@@ -233,15 +252,16 @@
             );
         };
 
-        // --- Gioco 3: Cortex House (Corretto e Ottimizzato) ---
+        // --- Gioco 3: Casetta Logica (5 Rounds + Visuale Migliorata) ---
         const LogicGame = ({ onComplete, difficulty }) => {
-            const [stage, setStage] = useState('watch');
+            const [stage, setStage] = useState('watch'); 
             const [round, setRound] = useState(1);
             const [score, setScore] = useState(0);
             const [peopleInside, setPeopleInside] = useState(0);
             const [userAnswer, setUserAnswer] = useState("");
             const [people, setPeople] = useState([]);
             const [status, setStatus] = useState("idle");
+            const [feedbackMsg, setFeedbackMsg] = useState("");
 
             const TOTAL_ROUNDS = 5;
 
@@ -251,13 +271,16 @@
                 setStage('watch');
                 setUserAnswer("");
                 setStatus("idle");
+                setFeedbackMsg("");
                 setPeople([]);
                 
                 let curr = 0;
                 let events = [];
-                const count = 3 + (difficulty * 2);
+                // Round 1 facile, poi aumenta
+                const eventCount = 3 + (round > 1 ? difficulty : 0); 
                 
-                for(let i=0; i<count; i++) {
+                // Logica generazione eventi
+                for(let i=0; i<eventCount; i++) {
                     const enter = Math.random() > 0.4 || curr === 0;
                     const val = Math.floor(Math.random() * 3) + 1;
                     if(enter){ curr += val; events.push({t:'in', v:val}); } 
@@ -266,13 +289,15 @@
                 setPeopleInside(curr);
 
                 let i = 0;
-                // Velocità animazione basata sulla difficoltà: più difficile = più veloce
-                const speedMs = Math.max(800, 2000 - (difficulty * 200)); 
-                
+                // Tempo per l'animazione di entrata/uscita
+                const animDuration = 1500; 
+                // Intervallo tra un gruppo e l'altro: deve essere > animDuration per non sovrapporsi
+                const intervalTime = animDuration + 500; 
+
                 const int = setInterval(() => {
                     if (i >= events.length) {
                         clearInterval(int);
-                        setTimeout(() => setStage('answer'), speedMs + 500); 
+                        setTimeout(() => setStage('answer'), 2000); 
                         return;
                     }
                     
@@ -280,18 +305,21 @@
                     const newBatch = [];
                     for(let p=0; p<ev.v; p++) {
                         newBatch.push({
-                            id: `p-${round}-${i}-${p}`,
+                            id: `p-${round}-${i}-${p}-${Date.now()}`,
                             type: ev.t,
                             gender: Math.random() > 0.5 ? 'm' : 'f',
-                            delay: p * 0.2,
-                            duration: speedMs / 1000 // Durata in secondi per CSS
+                            delay: p * 0.2 // Piccolo ritardo tra omini dello stesso gruppo
                         });
                     }
                     setPeople(newBatch);
-                    // Puliamo l'array prima che arrivi il prossimo gruppo per evitare sovrapposizioni
-                    setTimeout(() => setPeople([]), speedMs - 50);
+                    
+                    // Rimuovi gli omini dal DOM dopo che l'animazione è finita
+                    setTimeout(() => {
+                        setPeople([]);
+                    }, intervalTime - 50);
+
                     i++;
-                }, speedMs);
+                }, intervalTime);
             };
 
             const submit = () => {
@@ -299,6 +327,7 @@
 
                 const isCorrect = parseInt(userAnswer) === peopleInside;
                 setStatus(isCorrect ? 'correct' : 'error');
+                setFeedbackMsg(isCorrect ? "Corretto!" : `Sbagliato! Erano ${peopleInside}`);
 
                 setTimeout(() => {
                     let newTotalScore = score;
@@ -311,7 +340,7 @@
                     } else {
                         onComplete(newTotalScore);
                     }
-                }, 1500); // Tempo per vedere il feedback
+                }, 2000); // Pausa più lunga per leggere il feedback
             };
 
             const cardClass = status === "correct" ? "border-green-500 bg-green-900/20" : 
@@ -319,30 +348,40 @@
             const textClass = status === "correct" ? "text-green-400" : 
                               status === "error" ? "text-red-400" : "text-indigo-400";
 
+            // Render Omino
+            const Person = ({ type, gender, delay }) => {
+                const color = gender === 'm' ? '#38bdf8' : '#f472b6'; // Cyan vs Pink
+                return (
+                    <div className={`person ${type === 'in' ? 'anim-enter' : 'anim-exit'}`} style={{ animationDelay: `${delay}s` }}>
+                        <div className="person-head" style={{background: color}}></div>
+                        <div className="person-body" style={{background: color}}></div>
+                    </div>
+                );
+            };
+
             if(stage === 'watch') return (
-                <div className="flex flex-col items-center justify-center h-full animate-enter relative overflow-hidden">
-                    <div className="flex justify-between w-full mb-4 px-2 font-bold text-slate-400 text-sm">
+                <div className="flex flex-col h-full animate-enter overflow-hidden relative">
+                    <div className="absolute top-4 w-full text-center z-30">
+                        <span className="text-xl font-bold text-slate-300 bg-slate-900/80 px-4 py-1 rounded-full border border-slate-700">Osserva attentamente...</span>
+                    </div>
+                    
+                    <div className="flex justify-between w-full mt-16 px-4 font-bold text-slate-400 text-sm z-30">
                         <span>ROUND {round}/{TOTAL_ROUNDS}</span>
                         <span className="text-indigo-400">PUNTI: {score}</span>
                     </div>
-                    <div className="text-xl font-bold text-slate-300 mb-8 absolute top-16">Osserva la casa...</div>
-                    <div className="house">
-                        <div className="roof"></div>
-                        <div className="walls"><div className="door"></div></div>
-                    </div>
-                    <div className="absolute inset-0 pointer-events-none">
-                        {people.map((p) => (
-                            <div 
-                                key={p.id} 
-                                className="walker" 
-                                style={{ 
-                                    animation: `${p.type === 'in' ? 'walkIn' : 'walkOut'} ${p.duration}s linear forwards`,
-                                    animationDelay: `${p.delay}s`
-                                }}
-                            >
-                                <Icon name="user" size={32} color={p.gender === 'm' ? '#22d3ee' : '#e879f9'} className="drop-shadow-lg" />
+                    
+                    <div className="flex-grow relative flex flex-col justify-end pb-20">
+                        <div className="house-container">
+                            <div className="roof"></div>
+                            <div className="walls">
+                                <div className="door"></div>
                             </div>
-                        ))}
+                            {people.map(p => (
+                                <Person key={p.id} type={p.type} gender={p.gender} delay={p.delay} />
+                            ))}
+                        </div>
+                        {/* Pavimento */}
+                        <div className="absolute bottom-20 w-full h-1 bg-slate-700 z-0"></div>
                     </div>
                 </div>
             );
@@ -353,12 +392,18 @@
                         <span>ROUND {round}/{TOTAL_ROUNDS}</span>
                         <span className="text-indigo-400">PUNTI: {score}</span>
                     </div>
-                    <h2 className="text-center text-xl mb-6 font-bold text-slate-200">Quante persone sono rimaste?</h2>
+
+                    <h2 className="text-center text-xl mb-6 font-bold text-slate-200">Quanti dentro?</h2>
+                    
                     <Card className={`mb-8 flex flex-col items-center justify-center transition-all duration-300 ${cardClass}`}>
                         <div className={`text-6xl font-bold min-h-[4rem] transition-colors ${textClass}`}>{userAnswer}_</div>
-                        {status === "error" && <div className="text-red-400 font-bold text-sm animate-pulse mt-2">Sbagliato! Erano {peopleInside}</div>}
-                        {status === "correct" && <div className="text-green-400 font-bold text-sm animate-pulse mt-2">Corretto!</div>}
+                        {(status === "error" || status === "correct") && 
+                            <div className={`font-bold text-lg animate-pop ${status==='correct'?'text-green-400':'text-red-400'}`}>
+                                {feedbackMsg}
+                            </div>
+                        }
                     </Card>
+
                     <div className="grid grid-cols-3 gap-3 mt-auto">
                         {[1,2,3,4,5,6,7,8,9,0].map(n=><button key={n} onClick={()=>setUserAnswer(a=>a+n)} className="bg-slate-700 p-4 rounded-xl text-2xl font-bold btn-press">{n}</button>)}
                         <button onClick={()=>setUserAnswer("")} className="bg-red-900/30 text-red-400 p-4 rounded-xl font-bold btn-press">C</button>
@@ -433,7 +478,7 @@
                                 <div className="bg-white/20 p-3 rounded-full"><Icon name="play" color="white"/></div>
                             </button>
                             <div className="grid grid-cols-2 gap-3">
-                                {[{id:'math',n:'Calcoli Rapidi',i:'calculator',c:'text-cyan-400'},{id:'mem',n:'Synapse Seq',i:'grid',c:'text-purple-400'},{id:'logic',n:'Cortex House',i:'home',c:'text-orange-400'}].map(g=>
+                                {[{id:'math',n:'Calcoli Rapidi',i:'calculator',c:'text-cyan-400'},{id:'mem',n:'Synapse Seq',i:'grid',c:'text-purple-400'},{id:'logic',n:'Casetta Logica',i:'home',c:'text-orange-400'}].map(g=>
                                     <button key={g.id} onClick={()=>{setQueue([]); setGame(g.id); setView('game');}} className="bg-slate-800 border border-slate-700 p-4 rounded-xl text-left btn-press"><Icon name={g.i} className={`mb-3 ${g.c}`}/><div className="font-bold text-sm">{g.n}</div></button>
                                 )}
                             </div>
@@ -441,7 +486,7 @@
                     )}
                     {view==='game' && (
                         <div className="flex-grow flex flex-col">
-                            <div className="flex items-center mb-4"><button onClick={()=>setView('home')} className="p-2"><Icon name="arrow-left"/></button><span className="font-bold text-indigo-400 ml-2 uppercase text-sm tracking-wider">{game === 'math' ? 'Calcoli Rapidi' : game}</span></div>
+                            <div className="flex items-center mb-4"><button onClick={()=>setView('home')} className="p-2"><Icon name="arrow-left"/></button><span className="font-bold text-indigo-400 ml-2 uppercase text-sm tracking-wider">{game === 'math' ? 'Calcoli Rapidi' : game === 'logic' ? 'Casetta Logica' : 'Synapse Seq'}</span></div>
                             {game==='math' && <MathGame difficulty={Math.ceil(user.level/5)} onComplete={next}/>}
                             {game==='mem' && <MemoryGame difficulty={Math.ceil(user.level/5)} onComplete={next}/>}
                             {game==='logic' && <LogicGame difficulty={Math.ceil(user.level/5)} onComplete={next}/>}
