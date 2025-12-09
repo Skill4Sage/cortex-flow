@@ -39,8 +39,6 @@
         }
 
         .font-mono { font-family: 'JetBrains Mono', monospace; }
-        
-        /* Animazioni fluide */
         .animate-enter { animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .animate-pop { animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .animate-shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
@@ -66,55 +64,52 @@
         .anim-in { animation: walkIn 1.5s linear forwards; }
         .anim-out { animation: walkOut 1.5s linear forwards; }
 
-        /* --- DIGIT RUNNER STYLES (MIGLIORATI) --- */
-        .runner-scene { position: relative; width: 100%; height: 200px; overflow: hidden; background: #1e293b; border-radius: 12px; border-bottom: 4px solid #475569; }
-        .track { position: absolute; bottom: 0; width: 100%; height: 4px; background: #94a3b8; }
+        /* --- DIGIT RUNNER STYLES (REVISED) --- */
+        .runner-scene { position: relative; width: 100%; height: 240px; overflow: hidden; background: #1e293b; border-radius: 12px; border-bottom: 4px solid #475569; }
+        .track { position: absolute; bottom: 0; width: 100%; height: 4px; background: #94a3b8; z-index: 5; }
         
-        /* Omino Dettagliato */
-        .runner { position: absolute; bottom: 4px; left: 40px; width: 40px; height: 70px; z-index: 20; }
-        .r-head { width: 14px; height: 14px; background: #38bdf8; border-radius: 50%; position: absolute; top: 0; left: 13px; z-index: 22; }
-        .r-body { width: 6px; height: 28px; background: #0ea5e9; border-radius: 3px; position: absolute; top: 14px; left: 17px; z-index: 21; }
+        /* Omino Stickman Atletico */
+        .runner-box { position: absolute; bottom: 4px; left: 60px; width: 40px; height: 70px; z-index: 20; transition: transform 0.2s; }
+        .stick-head { width: 16px; height: 16px; background: #38bdf8; border-radius: 50%; position: absolute; top: 0; left: 12px; z-index: 2; }
+        .stick-torso { width: 4px; height: 30px; background: white; position: absolute; top: 16px; left: 18px; z-index: 1; }
         
-        .r-arm { width: 4px; height: 22px; background: #7dd3fc; position: absolute; top: 16px; border-radius: 2px; transform-origin: top center; }
-        .r-arm.left { left: 12px; animation: swingArm 0.6s infinite alternate; }
-        .r-arm.right { left: 24px; animation: swingArm 0.6s infinite alternate-reverse; }
-        
-        .r-leg { width: 5px; height: 26px; background: #0284c7; position: absolute; top: 38px; border-radius: 2px; transform-origin: top center; }
-        .r-leg.left { left: 14px; animation: runLeg 0.6s infinite alternate; }
-        .r-leg.right { left: 21px; animation: runLeg 0.6s infinite alternate-reverse; }
+        .stick-limb { width: 4px; height: 25px; background: white; position: absolute; transform-origin: top center; border-radius: 2px; }
+        .arm-l { top: 20px; left: 18px; animation: swing 0.5s infinite alternate; }
+        .arm-r { top: 20px; left: 18px; animation: swing 0.5s infinite alternate-reverse; }
+        .leg-l { top: 44px; left: 18px; animation: run 0.5s infinite alternate; }
+        .leg-r { top: 44px; left: 18px; animation: run 0.5s infinite alternate-reverse; }
 
-        @keyframes swingArm { from { transform: rotate(30deg); } to { transform: rotate(-30deg); } }
-        @keyframes runLeg { from { transform: rotate(25deg); } to { transform: rotate(-25deg); } }
+        @keyframes swing { from { transform: rotate(40deg); } to { transform: rotate(-40deg); } }
+        @keyframes run { from { transform: rotate(30deg); } to { transform: rotate(-30deg); } }
 
-        /* Animazioni Azione */
-        .runner.jump { animation: jumpAnim 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
-        .runner.jump .r-leg, .runner.jump .r-arm { animation-play-state: paused; }
+        /* Animazioni Logiche */
+        .running .arm-l, .running .arm-r, .running .leg-l, .running .leg-r { animation-play-state: running; }
+        .waiting .arm-l, .waiting .arm-r, .waiting .leg-l, .waiting .leg-r { animation: none; transform: rotate(0); }
         
-        .runner.stumble { animation: stumbleAnim 0.5s ease-in-out forwards; }
-        .runner.stumble .r-leg, .runner.stumble .r-arm { animation-play-state: paused; }
-
-        @keyframes jumpAnim { 
+        .jumping { animation: jumpHigh 0.5s ease-in-out; }
+        @keyframes jumpHigh { 
             0% { bottom: 4px; } 
-            40% { bottom: 90px; } /* Salta sopra l'ostacolo */
+            50% { bottom: 120px; } /* Salto alto sopra ostacolo */
             100% { bottom: 4px; } 
         }
-        @keyframes stumbleAnim { 
-            0% { transform: rotate(0deg); } 
-            20% { transform: rotate(20deg); } 
-            40% { transform: rotate(-10deg) translateX(-5px); } 
-            100% { transform: rotate(0deg) translateX(0); } 
+
+        .stumbling { transform-origin: bottom center; animation: fallFlat 0.3s forwards; }
+        @keyframes fallFlat {
+            0% { transform: rotate(0); }
+            100% { transform: rotate(90deg) translateY(20px); }
         }
 
-        .hurdle-container { position: absolute; bottom: 4px; right: -120px; z-index: 15; }
-        .hurdle { width: 10px; height: 60px; background: #ef4444; border-radius: 4px; margin: 0 auto; box-shadow: 2px 2px 0 #991b1b; }
-        .hurdle-options { display: flex; gap: 12px; margin-bottom: 8px; justify-content: center; }
-        
-        /* Ostacolo che scorre: durata fissa per dare tempo */
-        .anim-slide { animation: slideLeft 2s linear forwards; } 
-        @keyframes slideLeft { 
-            from { right: -120px; } 
-            to { right: 120%; } 
+        /* Ostacolo */
+        .hurdle-group { 
+            position: absolute; bottom: 4px; right: -150px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+            transition: right 0.5s linear; /* Movimento fluido ma controllato */
         }
+        .hurdle-wall { width: 20px; height: 80px; background: #ef4444; border: 2px solid #b91c1c; border-radius: 4px; }
+        .hurdle-nums { display: flex; gap: 10px; margin-bottom: 10px; }
+        
+        /* Timer bar */
+        .timer-bar { position: absolute; top: 10px; left: 10px; height: 6px; background: #eab308; border-radius: 3px; width: 0; }
 
     </style>
 </head>
@@ -150,7 +145,7 @@
             return <button onClick={onClick} disabled={disabled} className={`w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 btn-press disabled:opacity-50 ${styles[variant]} ${className}`}>{children}</button>;
         };
 
-        // --- GIOCO 1: CALCOLI RAPIDI (+, -, *, /) ---
+        // --- GIOCO 1: CALCOLI RAPIDI ---
         const MathGame = ({ onComplete, difficulty }) => {
             const [q, setQ] = useState({ t: "", a: 0 });
             const [input, setInput] = useState("");
@@ -165,28 +160,10 @@
                 const ops = ['+', '-', '×', '÷'];
                 const op = ops[Math.floor(Math.random() * ops.length)];
                 let n1, n2, ans;
-
-                if (op === '+') {
-                    n1 = Math.floor(Math.random() * (difficulty * 10)) + 5;
-                    n2 = Math.floor(Math.random() * 10) + 2;
-                    ans = n1 + n2;
-                } else if (op === '-') {
-                    n1 = Math.floor(Math.random() * (difficulty * 10)) + 5;
-                    n2 = Math.floor(Math.random() * 10) + 2;
-                    if(n1 < n2) [n1, n2] = [n2, n1];
-                    ans = n1 - n2;
-                } else if (op === '×') {
-                    // Tabelline 0-10
-                    n1 = Math.floor(Math.random() * 11);
-                    n2 = Math.floor(Math.random() * 11);
-                    ans = n1 * n2;
-                } else if (op === '÷') {
-                    // Divisioni intere da tabelline
-                    n2 = Math.floor(Math.random() * 10) + 1; 
-                    ans = Math.floor(Math.random() * 11); 
-                    n1 = n2 * ans;
-                }
-
+                if (op === '+') { n1=Math.floor(Math.random()*(difficulty*10))+5; n2=Math.floor(Math.random()*10)+2; ans=n1+n2; }
+                else if (op === '-') { n1=Math.floor(Math.random()*(difficulty*10))+5; n2=Math.floor(Math.random()*10)+2; if(n1<n2)[n1,n2]=[n2,n1]; ans=n1-n2; }
+                else if (op === '×') { n1=Math.floor(Math.random()*11); n2=Math.floor(Math.random()*11); ans=n1*n2; }
+                else if (op === '÷') { n2=Math.floor(Math.random()*10)+1; ans=Math.floor(Math.random()*11); n1=n2*ans; }
                 setQ({ t: `${n1} ${op} ${n2}`, a: ans });
             };
 
@@ -380,14 +357,17 @@
             );
         };
 
-        // --- GIOCO 4: DIGIT RUNNER (IMPROVED) ---
+        // --- GIOCO 4: DIGIT RUNNER (NUOVA LOGICA: CORRI -> PAUSA -> DECISIONE) ---
         const RunnerGame = ({ onComplete, difficulty }) => {
-            const [state, setState] = useState('running'); // running, obstacle
+            const [phase, setPhase] = useState('approach'); // approach, decision, result
             const [count, setCount] = useState(1);
             const [score, setScore] = useState(0);
             const [options, setOptions] = useState([]);
-            const [animState, setAnimState] = useState('run');
-            const TOTAL = 15; // Fissato a 15 come richiesto
+            const [anim, setAnim] = useState('running'); // running, waiting, jumping, stumbling
+            const [hurdlePos, setHurdlePos] = useState(-150); // px da destra
+            const [timerW, setTimerW] = useState(100); // larghezza barra timer
+            
+            const TOTAL = 15;
             const timerRef = useRef(null);
 
             useEffect(() => {
@@ -396,85 +376,124 @@
             }, []);
 
             const spawnObstacle = () => {
-                setAnimState('run');
-                setState('running');
-                
-                // Generazione numeri
-                const n1 = Math.floor(Math.random() * 20) + 1;
-                let n2 = Math.floor(Math.random() * 20) + 1;
-                while(n2 === n1) n2 = Math.floor(Math.random() * 20) + 1;
+                setAnim('running');
+                setPhase('approach');
+                setHurdlePos(-150);
+                setTimerW(100);
+
+                // Genera Numeri
+                const n1 = Math.floor(Math.random()*20)+1;
+                let n2 = Math.floor(Math.random()*20)+1;
+                while(n2===n1) n2=Math.floor(Math.random()*20)+1;
                 const nums = [n1, n2];
-                if (difficulty > 1) {
-                    let n3 = Math.floor(Math.random() * 20) + 1;
-                    while(n3 === n1 || n3 === n2) n3 = Math.floor(Math.random() * 20) + 1;
+                if(difficulty > 1) {
+                    let n3 = Math.floor(Math.random()*20)+1;
+                    while(n3===n1 || n3===n2) n3=Math.floor(Math.random()*20)+1;
                     nums.push(n3);
                 }
-                setOptions(nums.sort(() => Math.random() - 0.5));
-                
-                // Dopo breve corsa, appare l'ostacolo (fase decisione)
+                setOptions(nums.sort(()=>Math.random()-0.5));
+
+                // Fase 1: Avvicinamento (Animazione CSS simulata via State per semplicità React)
+                // In un app reale useremmo requestAnimationFrame, qui usiamo timeout per semplicità
                 setTimeout(() => {
-                    setState('obstacle');
-                    
-                    // Timer di 2 secondi (1s per reagire + tempo animazione scorrimento)
-                    // Se l'utente non preme, inciampa.
-                    timerRef.current = setTimeout(() => {
-                        handleMiss();
-                    }, 2000); 
+                    setHurdlePos(100); // Sposta ostacolo vicino all'omino
+                    setPhase('decision');
+                    setAnim('waiting'); // Omino si ferma o rallenta (corsa sul posto)
+                    startDecisionTimer();
                 }, 1000);
             };
 
-            const handleMiss = () => {
-                setAnimState('stumble'); // Inciampa
-                setTimeout(() => {
-                    if (count >= TOTAL) onComplete(score);
-                    else { setCount(c => c + 1); spawnObstacle(); }
-                }, 800);
+            const startDecisionTimer = () => {
+                // Timer visivo di 1 secondo
+                let w = 100;
+                const step = 10;
+                const interval = setInterval(() => {
+                    w -= step;
+                    setTimerW(w);
+                    if(w <= 0) {
+                        clearInterval(interval);
+                        handleResult(false); // Tempo scaduto = errore
+                    }
+                }, 100); // 100ms * 10 = 1000ms = 1s
+                timerRef.current = interval;
             };
 
             const handleTap = (val) => {
-                if(state !== 'obstacle') return;
-                clearTimeout(timerRef.current); // Ferma il timer automatico
-                
+                if(phase !== 'decision') return;
+                clearInterval(timerRef.current);
                 const max = Math.max(...options);
-                if(val === max) { 
-                    setAnimState('jump'); // Salta
-                    setScore(s => s + (10 * difficulty)); 
-                } else { 
-                    setAnimState('stumble'); // Inciampa
+                handleResult(val === max);
+            };
+
+            const handleResult = (success) => {
+                setPhase('result');
+                if(success) {
+                    setAnim('jumping');
+                    setScore(s => s + (10*difficulty));
+                } else {
+                    setAnim('stumbling');
                 }
-                
+
+                // Dopo l'animazione, resetta e vai avanti
                 setTimeout(() => {
-                    if(count >= TOTAL) onComplete(score + (val === max ? 10*difficulty : 0));
-                    else { setCount(c => c + 1); spawnObstacle(); }
-                }, 800);
+                    if(count >= TOTAL) onComplete(score + (success ? 10*difficulty : 0));
+                    else {
+                        setCount(c => c + 1);
+                        spawnHurdle();
+                    }
+                }, 1000);
             };
 
             return (
                 <div className="flex flex-col h-full animate-enter">
                     <div className="flex justify-between text-slate-400 font-mono text-sm font-bold mb-4"><span>OSTACOLO: {count}/{TOTAL}</span><span className="text-indigo-400">PUNTI: {score}</span></div>
                     
-                    <div className="runner-scene mb-6">
-                        {/* OMINO MIGLIORATO */}
-                        <div className={`runner ${animState}`}>
-                            <div className="r-head"></div>
-                            <div className="r-body"></div>
-                            <div className="r-arm left"></div>
-                            <div className="r-arm right"></div>
-                            <div className="r-leg left"></div>
-                            <div className="r-leg right"></div>
-                        </div>
-
-                        {state === 'obstacle' && (
-                            <div className="hurdle-container anim-slide">
-                                <div className="hurdle-options">
-                                    {options.map((n, i) => <button key={i} onClick={() => handleTap(n)} className="bg-indigo-600 text-white font-bold w-10 h-10 text-sm rounded-full border-2 border-white shadow-lg active:scale-90 transition-transform">{n}</button>)}
-                                </div>
-                                <div className="hurdle"></div>
+                    <div className="runner-scene mb-6 relative">
+                        {/* Barra Timer (visibile solo in decision) */}
+                        {phase === 'decision' && (
+                            <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-32 h-2 bg-slate-700 rounded-full overflow-hidden z-30">
+                                <div className="h-full bg-yellow-400 transition-all duration-100 ease-linear" style={{width: `${timerW}%`}}></div>
                             </div>
                         )}
+
+                        {/* OMINO STICKMAN */}
+                        <div className={`runner-box ${anim}`}>
+                            <div className="stick-head"></div>
+                            <div className="stick-torso"></div>
+                            <div className="stick-limb arm-l"></div>
+                            <div className="stick-limb arm-r"></div>
+                            <div className="stick-limb leg-l"></div>
+                            <div className="stick-limb leg-r"></div>
+                        </div>
+
+                        {/* OSTACOLO */}
+                        <div 
+                            className="hurdle-group" 
+                            style={{ 
+                                right: phase === 'approach' ? '-150px' : phase === 'decision' ? '120px' : '400px', /* Posizione dinamica */
+                                transition: phase === 'approach' ? 'right 1s linear' : phase === 'result' ? 'right 0.5s linear' : 'none'
+                            }}
+                        >
+                            <div className="hurdle-nums">
+                                {options.map((n, i) => (
+                                    <button 
+                                        key={i} 
+                                        onClick={() => handleTap(n)}
+                                        disabled={phase !== 'decision'}
+                                        className="bg-indigo-600 text-white font-bold w-10 h-10 rounded-full border-2 border-white shadow-lg active:scale-90"
+                                    >
+                                        {n}
+                                    </button>
+                                ))}
+                            </div>
+                            <div className="hurdle-wall"></div>
+                        </div>
+
                         <div className="track"></div>
                     </div>
-                    <div className="text-center text-slate-400">{state === 'obstacle' ? "Tocca il più alto!" : "Corri..."}</div>
+                    <div className="text-center text-slate-400 font-bold">
+                        {phase === 'decision' ? "Scegli il più alto!" : phase === 'result' ? (anim==='jumping'?"SALTO!":"INCIAMPATO!") : "In corsa..."}
+                    </div>
                 </div>
             );
         };
