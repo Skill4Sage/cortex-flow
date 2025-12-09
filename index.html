@@ -44,58 +44,38 @@
 
         .btn-press:active { transform: scale(0.96); transition: transform 0.1s; }
 
-        /* STILI CASA MIGLIORATI */
-        .house-container { position: relative; width: 200px; height: 160px; margin: 0 auto; display: flex; justify-content: center; align-items: flex-end; z-index: 20; }
-        .roof { 
-            position: absolute; top: 0; 
-            width: 0; height: 0; 
-            border-left: 100px solid transparent; 
-            border-right: 100px solid transparent; 
-            border-bottom: 60px solid #cbd5e1; /* Tetto chiaro */
-            z-index: 20;
-        }
-        .walls { 
-            width: 160px; height: 100px; 
-            background: #f1f5f9; /* Pareti chiare */
-            position: relative; 
-            z-index: 20;
-            display: flex; justify-content: center; align-items: flex-end;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .door { 
-            width: 50px; height: 70px; 
-            background: #1e293b; /* Porta scura (vuoto) */
-            border-radius: 4px 4px 0 0;
-            position: relative;
-            z-index: 15; /* Sotto le pareti ma sopra lo sfondo */
-        }
+        /* --- HOUSE OF CORTEX STYLES --- */
+        .game-scene { position: relative; width: 100%; height: 220px; overflow: hidden; display: flex; justify-content: center; align-items: flex-end; }
+        .house { position: relative; width: 140px; height: 120px; z-index: 20; display: flex; justify-content: center; align-items: flex-end; }
+        .house-roof { position: absolute; top: -50px; border-left: 80px solid transparent; border-right: 80px solid transparent; border-bottom: 50px solid #64748b; }
+        .house-body { width: 140px; height: 120px; background: #f8fafc; border: 4px solid #64748b; position: relative; display: flex; justify-content: center; align-items: flex-end; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        .house-door { width: 50px; height: 80px; background: #334155; border-radius: 4px 4px 0 0; }
+        .stick-figure { position: absolute; bottom: 0; left: 50%; margin-left: -15px; width: 30px; height: 60px; display: flex; flex-direction: column; align-items: center; opacity: 0; }
+        .head { width: 14px; height: 14px; border-radius: 50%; margin-bottom: 2px; border: 2px solid white; }
+        .body { width: 4px; height: 20px; background: white; border-radius: 2px; }
+        .legs { width: 20px; height: 20px; border-top: 2px solid white; border-radius: 50% 50% 0 0; margin-top: -2px; }
+        @keyframes walkIn { 0% { transform: translateX(-180px); opacity: 1; z-index: 30; } 80% { transform: translateX(0); opacity: 1; z-index: 30; } 81% { z-index: 10; } 100% { transform: translateX(0) scale(0.8); opacity: 0; z-index: 10; } }
+        @keyframes walkOut { 0% { transform: translateX(0) scale(0.8); opacity: 0; z-index: 10; } 20% { transform: translateX(0); opacity: 1; z-index: 30; } 100% { transform: translateX(180px); opacity: 1; z-index: 30; } }
+        .anim-in { animation: walkIn 1.5s linear forwards; }
+        .anim-out { animation: walkOut 1.5s linear forwards; }
 
-        /* Animazioni Persone */
-        @keyframes moveIn {
-            0% { transform: translateX(-150px) scale(1); opacity: 0; }
-            10% { opacity: 1; }
-            80% { transform: translateX(0) scale(0.9); opacity: 1; } /* Arriva alla porta */
-            100% { transform: translateX(0) scale(0.8); opacity: 0; } /* Sparisce dentro */
-        }
-
-        @keyframes moveOut {
-            0% { transform: translateX(0) scale(0.8); opacity: 0; } /* Esce dalla porta */
-            20% { opacity: 1; transform: translateX(0) scale(0.9); }
-            100% { transform: translateX(150px) scale(1); opacity: 1; } /* Va via */
-        }
-
-        .person {
-            position: absolute; bottom: 0; left: 50%; margin-left: -16px;
-            width: 32px; height: 60px;
-            z-index: 10; /* Sotto la casa */
-            display: flex; flex-direction: column; align-items: center;
-        }
-        
-        .person-body { width: 16px; height: 24px; border-radius: 4px; }
-        .person-head { width: 12px; height: 12px; border-radius: 50%; margin-bottom: 2px; }
-        
-        .anim-enter { animation: moveIn 1.5s linear forwards; }
-        .anim-exit { animation: moveOut 1.5s linear forwards; }
+        /* --- DIGIT RUNNER STYLES --- */
+        .runner-scene { position: relative; width: 100%; height: 200px; overflow: hidden; background: #1e293b; border-radius: 12px; border-bottom: 4px solid #475569; }
+        .track { position: absolute; bottom: 0; width: 100%; height: 2px; background: #94a3b8; }
+        .runner { position: absolute; bottom: 2px; left: 40px; width: 40px; height: 60px; transition: transform 0.3s; z-index: 20; }
+        .runner-head { width: 16px; height: 16px; border: 2px solid #38bdf8; border-radius: 50%; margin: 0 auto; }
+        .runner-body { width: 4px; height: 24px; background: #38bdf8; margin: 0 auto; }
+        .runner-legs { width: 24px; height: 20px; border-top: 3px solid #38bdf8; margin: 0 auto; border-radius: 50% 50% 0 0; animation: runLegs 0.3s infinite alternate; }
+        @keyframes runLegs { from { transform: scaleY(1); } to { transform: scaleY(0.8) translateY(5px); } }
+        .runner.jump { animation: jumpAnim 0.6s ease-out; }
+        .runner.stumble { animation: stumbleAnim 0.5s ease-in-out; }
+        @keyframes jumpAnim { 0% { bottom: 2px; } 50% { bottom: 80px; } 100% { bottom: 2px; } }
+        @keyframes stumbleAnim { 0% { transform: rotate(0deg); } 20% { transform: rotate(45deg); } 40% { transform: rotate(90deg) translateY(20px); } 100% { transform: rotate(0deg) translateY(0); } }
+        .hurdle { position: absolute; bottom: 0; right: -100px; width: 60px; height: 120px; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
+        .hurdle-box { width: 40px; height: 40px; background: #ef4444; border-radius: 4px; border: 2px solid #b91c1c; }
+        .hurdle-options { display: flex; gap: 8px; margin-bottom: 10px; }
+        .anim-slide { animation: slideLeft 2s linear forwards; }
+        @keyframes slideLeft { from { right: -100px; } to { right: 120%; } }
 
     </style>
 </head>
@@ -105,54 +85,34 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        // --- Icone ---
+        // --- Core ---
         const Icon = ({ name, size = 24, className = "", color = "currentColor" }) => {
             const iconRef = useRef(null);
-            useEffect(() => {
-                if (window.lucide) {
-                    window.lucide.createIcons({
-                        root: iconRef.current?.parentNode,
-                        nameAttr: 'data-lucide',
-                        attrs: { class: className, width: size, height: size, stroke: color }
-                    });
-                }
-            }, [name, size, className, color]);
+            useEffect(() => { if (window.lucide) window.lucide.createIcons({ root: iconRef.current?.parentNode, nameAttr: 'data-lucide', attrs: { class: className, width: size, height: size, stroke: color } }); }, [name, size, className, color]);
             return <i ref={iconRef} data-lucide={name} className={className}></i>;
         };
 
-        // --- Storage ---
         const useLocalStorage = (key, initialValue) => {
             const [storedValue, setStoredValue] = useState(() => {
-                try {
-                    const item = window.localStorage.getItem(key);
-                    return item ? JSON.parse(item) : initialValue;
-                } catch (error) { return initialValue; }
+                try { return JSON.parse(window.localStorage.getItem(key)) || initialValue; } catch { return initialValue; }
             });
             const setValue = (value) => {
                 try {
                     const valueToStore = value instanceof Function ? value(storedValue) : value;
                     setStoredValue(valueToStore);
                     window.localStorage.setItem(key, JSON.stringify(valueToStore));
-                } catch (error) {}
+                } catch {}
             };
             return [storedValue, setValue];
         };
 
-        const Card = ({ children, className = "" }) => (
-            <div className={`bg-slate-800/80 backdrop-blur-md border border-slate-700/50 rounded-2xl p-6 shadow-xl ${className}`}>{children}</div>
-        );
-
+        const Card = ({ children, className = "" }) => <div className={`bg-slate-800/80 backdrop-blur-md border border-slate-700/50 rounded-2xl p-6 shadow-xl ${className}`}>{children}</div>;
         const Button = ({ children, onClick, variant = "primary", className = "", disabled = false }) => {
-            const base = "w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 btn-press disabled:opacity-50 disabled:cursor-not-allowed";
-            const styles = {
-                primary: "bg-indigo-600 text-white shadow-lg shadow-indigo-900/50",
-                secondary: "bg-slate-700 text-white",
-                outline: "border-2 border-slate-600 text-slate-300"
-            };
-            return <button onClick={onClick} disabled={disabled} className={`${base} ${styles[variant]} ${className}`}>{children}</button>;
+            const styles = { primary: "bg-indigo-600 text-white shadow-lg", secondary: "bg-slate-700 text-white", outline: "border-2 border-slate-600 text-slate-300" };
+            return <button onClick={onClick} disabled={disabled} className={`w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 btn-press disabled:opacity-50 ${styles[variant]} ${className}`}>{children}</button>;
         };
 
-        // --- Gioco 1: Calcoli Rapidi (20 Domande) ---
+        // --- GIOCO 1: CALCOLI RAPIDI (+, -, *, /) ---
         const MathGame = ({ onComplete, difficulty }) => {
             const [q, setQ] = useState({ t: "", a: 0 });
             const [input, setInput] = useState("");
@@ -161,55 +121,69 @@
             const [status, setStatus] = useState("idle");
             const TOTAL = 20;
 
-            useEffect(() => { gen(); }, []);
+            useEffect(() => gen(), []);
 
             const gen = () => {
-                const ops = difficulty === 1 ? ['+','-'] : ['+','-','*'];
-                const op = ops[Math.floor(Math.random()*ops.length)];
-                let n1 = Math.floor(Math.random()*(difficulty*10))+5; 
-                let n2 = Math.floor(Math.random()*10)+2;
-                if(op === '-') [n1,n2] = [Math.max(n1,n2), Math.min(n1,n2)];
-                setQ({ t: `${n1} ${op} ${n2}`, a: op==='+'?n1+n2 : op==='-'?n1-n2 : n1*n2 });
+                const ops = ['+', '-', '×', '÷'];
+                const op = ops[Math.floor(Math.random() * ops.length)];
+                let n1, n2, ans;
+
+                if (op === '+') {
+                    n1 = Math.floor(Math.random() * (difficulty * 10)) + 5;
+                    n2 = Math.floor(Math.random() * 10) + 2;
+                    ans = n1 + n2;
+                } else if (op === '-') {
+                    n1 = Math.floor(Math.random() * (difficulty * 10)) + 5;
+                    n2 = Math.floor(Math.random() * 10) + 2;
+                    if(n1 < n2) [n1, n2] = [n2, n1];
+                    ans = n1 - n2;
+                } else if (op === '×') {
+                    // Tabelline 0-10
+                    n1 = Math.floor(Math.random() * 11);
+                    n2 = Math.floor(Math.random() * 11);
+                    ans = n1 * n2;
+                } else if (op === '÷') {
+                    // Divisioni intere da tabelline (es 72 / 8 = 9)
+                    n2 = Math.floor(Math.random() * 10) + 1; // Divisore 1-10
+                    ans = Math.floor(Math.random() * 11); // Risultato 0-10
+                    n1 = n2 * ans; // Dividendo
+                }
+
+                setQ({ t: `${n1} ${op} ${n2}`, a: ans });
             };
 
             const check = () => {
-                if (status !== "idle") return;
-                if(parseInt(input) === q.a) { 
-                    setStatus("correct");
+                if(status !== 'idle') return;
+                if(parseInt(input)===q.a) {
+                    setStatus('correct');
                     setTimeout(() => {
-                        const newScore = score + (10 * difficulty);
-                        setScore(newScore);
-                        if (count >= TOTAL) onComplete(newScore);
-                        else { setCount(c => c+1); setInput(""); setStatus("idle"); gen(); }
+                        const ns = score + (10*difficulty); setScore(ns);
+                        if(count>=TOTAL) onComplete(ns); else { setCount(c=>c+1); setInput(""); setStatus('idle'); gen(); }
                     }, 500);
-                } else { 
-                    setStatus("error");
-                    setTimeout(() => { setInput(""); setStatus("idle"); }, 600);
-                } 
+                } else {
+                    setStatus('error');
+                    setTimeout(() => { setInput(""); setStatus('idle'); }, 600);
+                }
             };
-
-            const cardClass = status === "correct" ? "border-green-500 bg-green-900/20" : status === "error" ? "border-red-500 bg-red-900/20 animate-shake" : "";
-            const inputColor = status === "correct" ? "text-green-400" : status === "error" ? "text-red-400" : "text-indigo-400";
 
             return (
                 <div className="flex flex-col h-full animate-enter">
-                    <div className="flex justify-between text-slate-400 font-mono mb-4 text-sm font-bold"><span>DOMANDA: {count}/{TOTAL}</span><span className="text-indigo-400">PUNTI: {score}</span></div>
-                    <Card className={`mb-6 flex-grow flex flex-col items-center justify-center transition-all duration-300 ${cardClass}`}>
+                    <div className="flex justify-between text-slate-400 font-mono text-sm font-bold mb-4"><span>DOMANDA: {count}/{TOTAL}</span><span className="text-indigo-400">PUNTI: {score}</span></div>
+                    <Card className={`mb-6 flex-grow flex flex-col items-center justify-center transition-all ${status==='correct'?'border-green-500 bg-green-900/20':status==='error'?'border-red-500 bg-red-900/20 animate-shake':''}`}>
                         <div className="text-6xl font-bold mb-6">{q.t}</div>
-                        <div className={`text-4xl h-10 font-bold transition-colors ${inputColor}`}>{input}_</div>
-                        {status === "error" && <div className="mt-4 text-red-400 font-bold text-sm animate-pulse">Riprova!</div>}
+                        <div className={`text-4xl h-10 font-bold ${status==='correct'?'text-green-400':status==='error'?'text-red-400':'text-indigo-400'}`}>{input}</div>
                     </Card>
                     <div className="grid grid-cols-3 gap-3">
                         {[1,2,3,4,5,6,7,8,9].map(n=><button key={n} onClick={()=>setInput(i=>i+n)} className="bg-slate-700 p-4 rounded-xl text-2xl font-bold btn-press">{n}</button>)}
                         <button onClick={()=>setInput("")} className="bg-red-900/30 text-red-400 p-4 rounded-xl font-bold btn-press">C</button>
                         <button onClick={()=>setInput(i=>i+"0")} className="bg-slate-700 p-4 rounded-xl text-2xl font-bold btn-press">0</button>
-                        <button onClick={check} className="bg-green-600 text-white p-4 rounded-xl font-bold btn-press shadow-lg shadow-green-900/50">OK</button>
+                        <button onClick={check} className="bg-green-600 text-white p-4 rounded-xl font-bold btn-press shadow-lg">OK</button>
                     </div>
                 </div>
             );
         };
 
-        // --- Gioco 2: Synapse Sequence ---
+        // --- GIOCO 2: SYNAPSE SEQUENCE ---
         const MemoryGame = ({ onComplete, difficulty }) => {
             const icons = ['zap', 'heart', 'star', 'moon', 'sun', 'music', 'anchor', 'cloud'];
             const [seq, setSeq] = useState([]);
@@ -230,11 +204,9 @@
             const tap = (ic) => {
                 if(show) return;
                 if(ic !== seq[playSeq.length]) { onComplete((lvl-1)*50); return; }
-                const np = [...playSeq, ic];
-                setPlaySeq(np);
+                const np = [...playSeq, ic]; setPlaySeq(np);
                 if(np.length === seq.length) {
-                    if(lvl >= difficulty+2) onComplete(lvl*100);
-                    else { setLvl(l=>l+1); setTimeout(()=>start(lvl+1), 500); }
+                    if(lvl >= difficulty+2) onComplete(lvl*100); else { setLvl(l=>l+1); setTimeout(()=>start(lvl+1), 500); }
                 }
             };
 
@@ -242,8 +214,7 @@
                 <div className="flex flex-col h-full animate-enter">
                     <div className="text-center text-slate-400 mb-4">Livello {lvl}</div>
                     <div className="flex-grow flex flex-col items-center justify-center">
-                        {show ? <div className="flex gap-3 flex-wrap justify-center animate-pop">{seq.map((ic,i)=><div key={i} className="bg-indigo-900/50 p-3 rounded"><Icon name={ic} size={32} color="#818cf8"/></div>)}</div>
-                        : <div className="text-2xl font-bold text-slate-300 animate-pulse">{msg}</div>}
+                        {show ? <div className="flex gap-3 flex-wrap justify-center animate-pop">{seq.map((ic,i)=><div key={i} className="bg-indigo-900/50 p-3 rounded"><Icon name={ic} size={32} color="#818cf8"/></div>)}</div> : <div className="text-2xl font-bold text-slate-300 animate-pulse">{msg}</div>}
                     </div>
                     <div className="grid grid-cols-4 gap-3 mt-auto">
                         {icons.map(ic=><button key={ic} disabled={show} onClick={()=>tap(ic)} className="bg-slate-700 p-3 rounded-xl flex justify-center items-center btn-press disabled:opacity-30"><Icon name={ic} size={28}/></button>)}
@@ -252,163 +223,179 @@
             );
         };
 
-        // --- Gioco 3: Casetta Logica (5 Rounds + Visuale Migliorata) ---
+        // --- GIOCO 3: HOUSE OF CORTEX ---
         const LogicGame = ({ onComplete, difficulty }) => {
-            const [stage, setStage] = useState('watch'); 
+            const [phase, setPhase] = useState('intro');
             const [round, setRound] = useState(1);
-            const [score, setScore] = useState(0);
+            const [totalScore, setTotalScore] = useState(0);
             const [peopleInside, setPeopleInside] = useState(0);
-            const [userAnswer, setUserAnswer] = useState("");
-            const [people, setPeople] = useState([]);
-            const [status, setStatus] = useState("idle");
-            const [feedbackMsg, setFeedbackMsg] = useState("");
+            const [userAns, setUserAns] = useState("");
+            const [queue, setQueue] = useState([]);
+            const [feedback, setFeedback] = useState(null);
 
-            const TOTAL_ROUNDS = 5;
+            const MAX_ROUNDS = 5;
 
-            useEffect(() => { startRound(); }, []);
+            useEffect(() => { setTimeout(() => startRound(1), 500); }, []);
 
-            const startRound = () => {
-                setStage('watch');
-                setUserAnswer("");
-                setStatus("idle");
-                setFeedbackMsg("");
-                setPeople([]);
-                
-                let curr = 0;
-                let events = [];
-                // Round 1 facile, poi aumenta
-                const eventCount = 3 + (round > 1 ? difficulty : 0); 
-                
-                // Logica generazione eventi
-                for(let i=0; i<eventCount; i++) {
-                    const enter = Math.random() > 0.4 || curr === 0;
-                    const val = Math.floor(Math.random() * 3) + 1;
-                    if(enter){ curr += val; events.push({t:'in', v:val}); } 
-                    else { const r = Math.min(curr, val); curr -= r; events.push({t:'out', v:r}); }
+            const startRound = (currentRound) => {
+                setPhase('watching');
+                setUserAns("");
+                setFeedback(null);
+                setQueue([]);
+
+                let current = 0;
+                let events = []; 
+                const numEvents = 3 + (currentRound > 1 ? difficulty : 0);
+
+                let timeOffset = 500;
+                const batchTime = 2000;
+
+                for(let i=0; i<numEvents; i++) {
+                    const isEnter = Math.random() > 0.4 || current === 0;
+                    const count = Math.floor(Math.random() * 3) + 1;
+                    
+                    if(isEnter) {
+                        current += count;
+                        for(let k=0; k<count; k++) {
+                            events.push({ id: `r${currentRound}-e${i}-p${k}`, type: 'in', delay: timeOffset + (k*200), gender: Math.random()>0.5?'m':'f' });
+                        }
+                    } else {
+                        const realExit = Math.min(current, count);
+                        current -= realExit;
+                        for(let k=0; k<realExit; k++) {
+                            events.push({ id: `r${currentRound}-e${i}-p${k}`, type: 'out', delay: timeOffset + (k*200), gender: Math.random()>0.5?'m':'f' });
+                        }
+                    }
+                    timeOffset += batchTime;
                 }
-                setPeopleInside(curr);
 
-                let i = 0;
-                // Tempo per l'animazione di entrata/uscita
-                const animDuration = 1500; 
-                // Intervallo tra un gruppo e l'altro: deve essere > animDuration per non sovrapporsi
-                const intervalTime = animDuration + 500; 
+                setPeopleInside(current);
+                setQueue(events);
 
-                const int = setInterval(() => {
-                    if (i >= events.length) {
-                        clearInterval(int);
-                        setTimeout(() => setStage('answer'), 2000); 
-                        return;
-                    }
-                    
-                    const ev = events[i];
-                    const newBatch = [];
-                    for(let p=0; p<ev.v; p++) {
-                        newBatch.push({
-                            id: `p-${round}-${i}-${p}-${Date.now()}`,
-                            type: ev.t,
-                            gender: Math.random() > 0.5 ? 'm' : 'f',
-                            delay: p * 0.2 // Piccolo ritardo tra omini dello stesso gruppo
-                        });
-                    }
-                    setPeople(newBatch);
-                    
-                    // Rimuovi gli omini dal DOM dopo che l'animazione è finita
-                    setTimeout(() => {
-                        setPeople([]);
-                    }, intervalTime - 50);
-
-                    i++;
-                }, intervalTime);
+                const totalDuration = timeOffset + 1500;
+                setTimeout(() => setPhase('guessing'), totalDuration);
             };
 
             const submit = () => {
-                if (status !== 'idle') return;
-
-                const isCorrect = parseInt(userAnswer) === peopleInside;
-                setStatus(isCorrect ? 'correct' : 'error');
-                setFeedbackMsg(isCorrect ? "Corretto!" : `Sbagliato! Erano ${peopleInside}`);
+                if(phase !== 'guessing') return;
+                const val = parseInt(userAns);
+                const isCorrect = val === peopleInside;
+                setFeedback({ correct: isCorrect, val: peopleInside });
+                setPhase('feedback');
+                let newScore = totalScore;
+                if(isCorrect) newScore += (100 * difficulty);
 
                 setTimeout(() => {
-                    let newTotalScore = score;
-                    if (isCorrect) newTotalScore += (100 * difficulty);
-                    
-                    if (round < TOTAL_ROUNDS) {
-                        setScore(newTotalScore);
+                    if(round < MAX_ROUNDS) {
+                        setTotalScore(newScore);
                         setRound(r => r + 1);
-                        startRound();
+                        startRound(round + 1);
                     } else {
-                        onComplete(newTotalScore);
+                        onComplete(newScore);
                     }
-                }, 2000); // Pausa più lunga per leggere il feedback
+                }, 2500);
             };
 
-            const cardClass = status === "correct" ? "border-green-500 bg-green-900/20" : 
-                              status === "error" ? "border-red-500 bg-red-900/20 animate-shake" : "";
-            const textClass = status === "correct" ? "text-green-400" : 
-                              status === "error" ? "text-red-400" : "text-indigo-400";
-
-            // Render Omino
-            const Person = ({ type, gender, delay }) => {
-                const color = gender === 'm' ? '#38bdf8' : '#f472b6'; // Cyan vs Pink
+            const Person = ({ p }) => {
+                const color = p.gender === 'm' ? '#0ea5e9' : '#d946ef';
                 return (
-                    <div className={`person ${type === 'in' ? 'anim-enter' : 'anim-exit'}`} style={{ animationDelay: `${delay}s` }}>
-                        <div className="person-head" style={{background: color}}></div>
-                        <div className="person-body" style={{background: color}}></div>
+                    <div className={`stick-figure ${p.type === 'in' ? 'anim-in' : 'anim-out'}`} style={{ animationDelay: `${p.delay}ms` }}>
+                        <div className="head" style={{ borderColor: color }}></div>
+                        <div className="body" style={{ backgroundColor: color }}></div>
+                        <div className="legs" style={{ borderTopColor: color }}></div>
                     </div>
                 );
             };
 
-            if(stage === 'watch') return (
-                <div className="flex flex-col h-full animate-enter overflow-hidden relative">
-                    <div className="absolute top-4 w-full text-center z-30">
-                        <span className="text-xl font-bold text-slate-300 bg-slate-900/80 px-4 py-1 rounded-full border border-slate-700">Osserva attentamente...</span>
+            return (
+                <div className="flex flex-col h-full animate-enter">
+                    <div className="flex justify-between text-slate-400 font-mono text-sm font-bold mb-2">
+                        <span>ROUND: {round}/{MAX_ROUNDS}</span><span className="text-indigo-400">PUNTI: {totalScore}</span>
                     </div>
-                    
-                    <div className="flex justify-between w-full mt-16 px-4 font-bold text-slate-400 text-sm z-30">
-                        <span>ROUND {round}/{TOTAL_ROUNDS}</span>
-                        <span className="text-indigo-400">PUNTI: {score}</span>
-                    </div>
-                    
-                    <div className="flex-grow relative flex flex-col justify-end pb-20">
-                        <div className="house-container">
-                            <div className="roof"></div>
-                            <div className="walls">
-                                <div className="door"></div>
+                    {phase === 'watching' && (
+                        <div className="flex-grow flex flex-col relative overflow-hidden bg-slate-900 rounded-xl border border-slate-800 mb-4">
+                            <div className="absolute top-4 w-full text-center z-50"><span className="text-white font-bold bg-black/50 px-4 py-1 rounded-full">Osserva...</span></div>
+                            <div className="game-scene">
+                                <div className="house"><div className="house-roof"></div><div className="house-body"><div className="house-door"></div></div></div>
+                                <div className="absolute bottom-0 w-full h-2 bg-slate-700 z-0"></div>
+                                {queue.map(p => <Person key={p.id} p={p} />)}
                             </div>
-                            {people.map(p => (
-                                <Person key={p.id} type={p.type} gender={p.gender} delay={p.delay} />
-                            ))}
                         </div>
-                        {/* Pavimento */}
-                        <div className="absolute bottom-20 w-full h-1 bg-slate-700 z-0"></div>
-                    </div>
+                    )}
+                    {(phase === 'guessing' || phase === 'feedback') && (
+                        <div className="flex-grow flex flex-col items-center justify-center animate-pop">
+                            <h2 className="text-xl font-bold text-white mb-6">Quanti dentro?</h2>
+                            <Card className={`mb-6 w-full flex flex-col items-center transition-colors ${phase==='feedback' ? (feedback.correct ? 'border-green-500 bg-green-900/20' : 'border-red-500 bg-red-900/20') : ''}`}>
+                                <div className={`text-6xl font-bold h-16 ${phase==='feedback' ? (feedback.correct ? 'text-green-400' : 'text-red-400') : 'text-indigo-400'}`}>{userAns}</div>
+                                {phase === 'feedback' && (<div className="mt-2 font-bold text-lg animate-pop">{feedback.correct ? "Corretto!" : `No! Erano ${feedback.val}`}</div>)}
+                            </Card>
+                            {phase === 'guessing' && (
+                                <div className="grid grid-cols-3 gap-3 w-full">
+                                    {[1,2,3,4,5,6,7,8,9,0].map(n => <button key={n} onClick={()=>setUserAns(s=>s+n)} className="bg-slate-700 p-4 rounded-xl text-2xl font-bold btn-press text-white">{n}</button>)}
+                                    <button onClick={()=>setUserAns("")} className="bg-red-900/30 text-red-400 p-4 rounded-xl font-bold btn-press">C</button>
+                                    <button onClick={submit} className="bg-green-600 text-white p-4 rounded-xl font-bold col-span-2 shadow-lg btn-press">CONFERMA</button>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             );
+        };
+
+        // --- GIOCO 4: DIGIT RUNNER ---
+        const RunnerGame = ({ onComplete, difficulty }) => {
+            const [state, setState] = useState('running');
+            const [count, setCount] = useState(1);
+            const [score, setScore] = useState(0);
+            const [options, setOptions] = useState([]);
+            const [animState, setAnimState] = useState('run');
+            const TOTAL = 20;
+
+            useEffect(() => spawnObstacle(), []);
+
+            const spawnObstacle = () => {
+                setAnimState('run');
+                setState('running');
+                const n1 = Math.floor(Math.random() * 20) + 1;
+                let n2 = Math.floor(Math.random() * 20) + 1;
+                while(n2 === n1) n2 = Math.floor(Math.random() * 20) + 1;
+                const nums = [n1, n2];
+                if (difficulty > 1) {
+                    let n3 = Math.floor(Math.random() * 20) + 1;
+                    while(n3 === n1 || n3 === n2) n3 = Math.floor(Math.random() * 20) + 1;
+                    nums.push(n3);
+                }
+                setOptions(nums.sort(() => Math.random() - 0.5));
+                setTimeout(() => setState('obstacle'), 1000);
+            };
+
+            const handleTap = (val) => {
+                if(state !== 'obstacle') return;
+                const max = Math.max(...options);
+                if(val === max) { setAnimState('jump'); setScore(s => s + (10 * difficulty)); }
+                else { setAnimState('stumble'); }
+                setTimeout(() => {
+                    if(count >= TOTAL) onComplete(score + (val === max ? 10*difficulty : 0));
+                    else { setCount(c => c + 1); spawnObstacle(); }
+                }, 800);
+            };
 
             return (
                 <div className="flex flex-col h-full animate-enter">
-                    <div className="flex justify-between w-full mb-4 px-2 font-bold text-slate-400 text-sm">
-                        <span>ROUND {round}/{TOTAL_ROUNDS}</span>
-                        <span className="text-indigo-400">PUNTI: {score}</span>
-                    </div>
-
-                    <h2 className="text-center text-xl mb-6 font-bold text-slate-200">Quanti dentro?</h2>
-                    
-                    <Card className={`mb-8 flex flex-col items-center justify-center transition-all duration-300 ${cardClass}`}>
-                        <div className={`text-6xl font-bold min-h-[4rem] transition-colors ${textClass}`}>{userAnswer}_</div>
-                        {(status === "error" || status === "correct") && 
-                            <div className={`font-bold text-lg animate-pop ${status==='correct'?'text-green-400':'text-red-400'}`}>
-                                {feedbackMsg}
+                    <div className="flex justify-between text-slate-400 font-mono text-sm font-bold mb-4"><span>OSTACOLO: {count}/{TOTAL}</span><span className="text-indigo-400">PUNTI: {score}</span></div>
+                    <div className="runner-scene mb-6">
+                        <div className={`runner ${animState}`}><div className="runner-head"></div><div className="runner-body"></div><div className="runner-legs"></div></div>
+                        {state === 'obstacle' && (
+                            <div className="hurdle anim-slide">
+                                <div className="hurdle-options">
+                                    {options.map((n, i) => <button key={i} onClick={() => handleTap(n)} className="bg-indigo-600 text-white font-bold w-12 h-12 rounded-full border-2 border-white shadow-lg active:scale-90 transition-transform">{n}</button>)}
+                                </div>
+                                <div className="hurdle-box"></div>
                             </div>
-                        }
-                    </Card>
-
-                    <div className="grid grid-cols-3 gap-3 mt-auto">
-                        {[1,2,3,4,5,6,7,8,9,0].map(n=><button key={n} onClick={()=>setUserAnswer(a=>a+n)} className="bg-slate-700 p-4 rounded-xl text-2xl font-bold btn-press">{n}</button>)}
-                        <button onClick={()=>setUserAnswer("")} className="bg-red-900/30 text-red-400 p-4 rounded-xl font-bold btn-press">C</button>
-                        <button onClick={submit} className="bg-green-600 text-white p-4 rounded-xl font-bold col-span-3 shadow-lg shadow-green-900/50 btn-press">CONFERMA</button>
+                        )}
+                        <div className="track"></div>
                     </div>
+                    <div className="text-center text-slate-400">{state === 'obstacle' ? "Tocca il più alto!" : "Corri..."}</div>
                 </div>
             );
         };
@@ -459,7 +446,7 @@
                         <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400 mb-4">Ottimo!</h2>
                         <div className="text-slate-400 mb-6">+{sXp} XP</div>
                         <canvas ref={cvs} width="300" height="300" className="rounded-xl shadow-2xl mb-6 bg-slate-800"></canvas>
-                        <button onClick={()=>setView('home')} className="bg-indigo-600 text-white py-4 px-8 rounded-xl font-bold shadow-lg shadow-indigo-900/50">Home</button>
+                        <button onClick={()=>setView('home')} className="bg-indigo-600 text-white py-4 px-8 rounded-xl font-bold shadow-lg">Home</button>
                     </div>
                 );
             };
@@ -473,12 +460,16 @@
                                 <div className="text-center"><div className="text-2xl font-bold text-yellow-500 flex items-center gap-1"><Icon name="flame" size={24} color="#eab308"/>{user.streak}</div><div className="text-[10px] uppercase text-slate-500 font-bold">Streak</div></div>
                             </div>
                             <Card><div className="text-sm font-bold text-slate-400 mb-2">PROGRESSO</div><div className="h-3 bg-slate-900 rounded-full overflow-hidden"><div className="h-full bg-indigo-500 transition-all duration-1000" style={{width: `${(user.xp%1000)/10}%`}}></div></div></Card>
-                            <button onClick={()=>{setQueue(['math','mem','logic']); setSXp(0); setGame('math'); setView('game');}} className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 p-6 rounded-2xl flex items-center justify-between shadow-lg btn-press">
+                            <button onClick={()=>{setQueue(['math','mem','logic','run']); setSXp(0); setGame('math'); setView('game');}} className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 p-6 rounded-2xl flex items-center justify-between shadow-lg btn-press">
                                 <div className="text-left"><div className="text-xl font-bold text-white flex gap-2"><Icon name="dumbbell" className="text-white"/> Daily Workout</div><div className="text-indigo-200 text-sm mt-1">5 Minuti</div></div>
                                 <div className="bg-white/20 p-3 rounded-full"><Icon name="play" color="white"/></div>
                             </button>
                             <div className="grid grid-cols-2 gap-3">
-                                {[{id:'math',n:'Calcoli Rapidi',i:'calculator',c:'text-cyan-400'},{id:'mem',n:'Synapse Seq',i:'grid',c:'text-purple-400'},{id:'logic',n:'Casetta Logica',i:'home',c:'text-orange-400'}].map(g=>
+                                {[{id:'math',n:'Calcoli Rapidi',i:'calculator',c:'text-cyan-400'},
+                                  {id:'mem',n:'Synapse Seq',i:'grid',c:'text-purple-400'},
+                                  {id:'logic',n:'House of Cortex',i:'home',c:'text-orange-400'},
+                                  {id:'run',n:'Digit Runner',i:'activity',c:'text-green-400'}
+                                ].map(g=>
                                     <button key={g.id} onClick={()=>{setQueue([]); setGame(g.id); setView('game');}} className="bg-slate-800 border border-slate-700 p-4 rounded-xl text-left btn-press"><Icon name={g.i} className={`mb-3 ${g.c}`}/><div className="font-bold text-sm">{g.n}</div></button>
                                 )}
                             </div>
@@ -486,10 +477,11 @@
                     )}
                     {view==='game' && (
                         <div className="flex-grow flex flex-col">
-                            <div className="flex items-center mb-4"><button onClick={()=>setView('home')} className="p-2"><Icon name="arrow-left"/></button><span className="font-bold text-indigo-400 ml-2 uppercase text-sm tracking-wider">{game === 'math' ? 'Calcoli Rapidi' : game === 'logic' ? 'Casetta Logica' : 'Synapse Seq'}</span></div>
+                            <div className="flex items-center mb-4"><button onClick={()=>setView('home')} className="p-2"><Icon name="arrow-left"/></button><span className="font-bold text-indigo-400 ml-2 uppercase text-sm tracking-wider">{game === 'math' ? 'Calcoli Rapidi' : game === 'logic' ? 'House of Cortex' : game === 'run' ? 'Digit Runner' : 'Synapse Seq'}</span></div>
                             {game==='math' && <MathGame difficulty={Math.ceil(user.level/5)} onComplete={next}/>}
                             {game==='mem' && <MemoryGame difficulty={Math.ceil(user.level/5)} onComplete={next}/>}
                             {game==='logic' && <LogicGame difficulty={Math.ceil(user.level/5)} onComplete={next}/>}
+                            {game==='run' && <RunnerGame difficulty={Math.ceil(user.level/5)} onComplete={next}/>}
                         </div>
                     )}
                     {view==='reward' && <Reward/>}
