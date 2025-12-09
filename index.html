@@ -39,6 +39,8 @@
         }
 
         .font-mono { font-family: 'JetBrains Mono', monospace; }
+        
+        /* Animazioni fluide */
         .animate-enter { animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .animate-pop { animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .animate-shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
@@ -59,8 +61,19 @@
         .head { width: 14px; height: 14px; border-radius: 50%; margin-bottom: 2px; border: 2px solid white; }
         .body { width: 4px; height: 20px; background: white; border-radius: 2px; }
         .legs { width: 20px; height: 20px; border-top: 2px solid white; border-radius: 50% 50% 0 0; margin-top: -2px; }
-        @keyframes walkIn { 0% { transform: translateX(-180px); opacity: 1; z-index: 30; } 80% { transform: translateX(0); opacity: 1; z-index: 30; } 81% { z-index: 10; } 100% { transform: translateX(0) scale(0.8); opacity: 0; z-index: 10; } }
-        @keyframes walkOut { 0% { transform: translateX(0) scale(0.8); opacity: 0; z-index: 10; } 20% { transform: translateX(0); opacity: 1; z-index: 30; } 100% { transform: translateX(180px); opacity: 1; z-index: 30; } }
+        
+        @keyframes walkIn { 
+            0% { transform: translateX(-180px); opacity: 1; z-index: 30; } 
+            80% { transform: translateX(0); opacity: 1; z-index: 30; } 
+            81% { z-index: 10; } 
+            100% { transform: translateX(0) scale(0.8); opacity: 0; z-index: 10; } 
+        }
+        @keyframes walkOut { 
+            0% { transform: translateX(0) scale(0.8); opacity: 0; z-index: 10; } 
+            20% { transform: translateX(0); opacity: 1; z-index: 30; } 
+            90% { opacity: 1; }
+            100% { transform: translateX(180px); opacity: 0; z-index: 30; } 
+        }
         .anim-in { animation: walkIn 1.5s linear forwards; }
         .anim-out { animation: walkOut 1.5s linear forwards; }
 
@@ -70,32 +83,46 @@
         
         /* Omino Stickman Atletico */
         .runner-box { position: absolute; bottom: 4px; left: 60px; width: 40px; height: 70px; z-index: 20; transition: transform 0.2s; }
-        .stick-head { width: 16px; height: 16px; background: #38bdf8; border-radius: 50%; position: absolute; top: 0; left: 12px; z-index: 2; }
-        .stick-torso { width: 4px; height: 30px; background: white; position: absolute; top: 16px; left: 18px; z-index: 1; }
+        .stick-head { width: 16px; height: 16px; background: #38bdf8; border-radius: 50%; position: absolute; top: 0; left: 12px; z-index: 2; border: 2px solid #0c4a6e; }
+        .stick-torso { width: 6px; height: 32px; background: white; position: absolute; top: 16px; left: 17px; z-index: 1; border-radius: 3px; }
         
-        .stick-limb { width: 4px; height: 25px; background: white; position: absolute; transform-origin: top center; border-radius: 2px; }
-        .arm-l { top: 20px; left: 18px; animation: swing 0.5s infinite alternate; }
-        .arm-r { top: 20px; left: 18px; animation: swing 0.5s infinite alternate-reverse; }
-        .leg-l { top: 44px; left: 18px; animation: run 0.5s infinite alternate; }
-        .leg-r { top: 44px; left: 18px; animation: run 0.5s infinite alternate-reverse; }
+        .stick-limb { width: 6px; height: 24px; background: white; position: absolute; transform-origin: top center; border-radius: 3px; }
+        
+        /* Braccia e Gambe */
+        .arm-l { top: 18px; left: 17px; animation: swing 0.5s infinite alternate; background: #cbd5e1; z-index: 0; }
+        .arm-r { top: 18px; left: 17px; animation: swing 0.5s infinite alternate-reverse; z-index: 3; }
+        .leg-l { top: 44px; left: 17px; animation: run 0.5s infinite alternate; background: #cbd5e1; z-index: 0; }
+        .leg-r { top: 44px; left: 17px; animation: run 0.5s infinite alternate-reverse; z-index: 3; }
 
         @keyframes swing { from { transform: rotate(40deg); } to { transform: rotate(-40deg); } }
-        @keyframes run { from { transform: rotate(30deg); } to { transform: rotate(-30deg); } }
+        @keyframes run { from { transform: rotate(35deg); } to { transform: rotate(-35deg); } }
 
-        /* Animazioni Logiche */
-        .running .arm-l, .running .arm-r, .running .leg-l, .running .leg-r { animation-play-state: running; }
-        .waiting .arm-l, .waiting .arm-r, .waiting .leg-l, .waiting .leg-r { animation: none; transform: rotate(0); }
+        /* Stati Animazione */
+        .runner-box.running .arm-l, .runner-box.running .arm-r, .runner-box.running .leg-l, .runner-box.running .leg-r { animation-play-state: running; }
         
-        .jumping { animation: jumpHigh 0.5s ease-in-out; }
+        .runner-box.waiting .arm-l, .runner-box.waiting .arm-r, .runner-box.waiting .leg-l, .runner-box.waiting .leg-r { animation: none; transform: rotate(0); }
+        .runner-box.waiting { transform: scale(1.05); } /* Respiro */
+
+        .runner-box.jumping { animation: jumpHigh 0.5s ease-in-out; }
+        .runner-box.jumping .arm-l { transform: rotate(-140deg); }
+        .runner-box.jumping .arm-r { transform: rotate(140deg); }
+        .runner-box.jumping .leg-l { transform: rotate(45deg); }
+        .runner-box.jumping .leg-r { transform: rotate(-45deg); }
+        .runner-box.jumping .stick-limb { animation: none; }
+
         @keyframes jumpHigh { 
             0% { bottom: 4px; } 
-            50% { bottom: 120px; } /* Salto alto sopra ostacolo */
+            50% { bottom: 130px; } 
             100% { bottom: 4px; } 
         }
 
-        .stumbling { transform-origin: bottom center; animation: fallFlat 0.3s forwards; }
+        .runner-box.stumbling { transform-origin: bottom center; animation: fallFlat 0.4s forwards; }
+        /* FERMA LE GAMBE QUANDO INCIAMPA! */
+        .runner-box.stumbling .stick-limb { animation-play-state: paused !important; }
+        
         @keyframes fallFlat {
             0% { transform: rotate(0); }
+            40% { transform: rotate(15deg); }
             100% { transform: rotate(90deg) translateY(20px); }
         }
 
@@ -103,10 +130,10 @@
         .hurdle-group { 
             position: absolute; bottom: 4px; right: -150px; 
             display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
-            transition: right 0.5s linear; /* Movimento fluido ma controllato */
+            transition: right 0.5s linear; 
         }
-        .hurdle-wall { width: 20px; height: 80px; background: #ef4444; border: 2px solid #b91c1c; border-radius: 4px; }
-        .hurdle-nums { display: flex; gap: 10px; margin-bottom: 10px; }
+        .hurdle-wall { width: 16px; height: 80px; background: #ef4444; border: 2px solid #b91c1c; border-radius: 4px; }
+        .hurdle-nums { display: flex; gap: 12px; margin-bottom: 8px; }
         
         /* Timer bar */
         .timer-bar { position: absolute; top: 10px; left: 10px; height: 6px; background: #eab308; border-radius: 3px; width: 0; }
@@ -357,15 +384,15 @@
             );
         };
 
-        // --- GIOCO 4: DIGIT RUNNER (NUOVA LOGICA: CORRI -> PAUSA -> DECISIONE) ---
+        // --- GIOCO 4: DIGIT RUNNER (CORRETTO) ---
         const RunnerGame = ({ onComplete, difficulty }) => {
             const [phase, setPhase] = useState('approach'); // approach, decision, result
             const [count, setCount] = useState(1);
             const [score, setScore] = useState(0);
             const [options, setOptions] = useState([]);
             const [anim, setAnim] = useState('running'); // running, waiting, jumping, stumbling
-            const [hurdlePos, setHurdlePos] = useState(-150); // px da destra
-            const [timerW, setTimerW] = useState(100); // larghezza barra timer
+            const [hurdlePos, setHurdlePos] = useState(-150); 
+            const [timerW, setTimerW] = useState(100);
             
             const TOTAL = 15;
             const timerRef = useRef(null);
@@ -381,7 +408,6 @@
                 setHurdlePos(-150);
                 setTimerW(100);
 
-                // Genera Numeri
                 const n1 = Math.floor(Math.random()*20)+1;
                 let n2 = Math.floor(Math.random()*20)+1;
                 while(n2===n1) n2=Math.floor(Math.random()*20)+1;
@@ -393,28 +419,25 @@
                 }
                 setOptions(nums.sort(()=>Math.random()-0.5));
 
-                // Fase 1: Avvicinamento (Animazione CSS simulata via State per semplicità React)
-                // In un app reale useremmo requestAnimationFrame, qui usiamo timeout per semplicità
                 setTimeout(() => {
-                    setHurdlePos(100); // Sposta ostacolo vicino all'omino
+                    setHurdlePos(100); // Ostacolo arriva davanti
                     setPhase('decision');
-                    setAnim('waiting'); // Omino si ferma o rallenta (corsa sul posto)
+                    setAnim('waiting'); 
                     startDecisionTimer();
                 }, 1000);
             };
 
             const startDecisionTimer = () => {
-                // Timer visivo di 1 secondo
                 let w = 100;
-                const step = 10;
+                const step = 10; // 100ms * 10 = 1000ms = 1s
                 const interval = setInterval(() => {
                     w -= step;
                     setTimerW(w);
                     if(w <= 0) {
                         clearInterval(interval);
-                        handleResult(false); // Tempo scaduto = errore
+                        handleResult(false);
                     }
-                }, 100); // 100ms * 10 = 1000ms = 1s
+                }, 100);
                 timerRef.current = interval;
             };
 
@@ -434,12 +457,11 @@
                     setAnim('stumbling');
                 }
 
-                // Dopo l'animazione, resetta e vai avanti
                 setTimeout(() => {
                     if(count >= TOTAL) onComplete(score + (success ? 10*difficulty : 0));
                     else {
                         setCount(c => c + 1);
-                        spawnHurdle();
+                        spawnObstacle();
                     }
                 }, 1000);
             };
@@ -449,7 +471,7 @@
                     <div className="flex justify-between text-slate-400 font-mono text-sm font-bold mb-4"><span>OSTACOLO: {count}/{TOTAL}</span><span className="text-indigo-400">PUNTI: {score}</span></div>
                     
                     <div className="runner-scene mb-6 relative">
-                        {/* Barra Timer (visibile solo in decision) */}
+                        {/* Barra Timer */}
                         {phase === 'decision' && (
                             <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-32 h-2 bg-slate-700 rounded-full overflow-hidden z-30">
                                 <div className="h-full bg-yellow-400 transition-all duration-100 ease-linear" style={{width: `${timerW}%`}}></div>
@@ -470,7 +492,7 @@
                         <div 
                             className="hurdle-group" 
                             style={{ 
-                                right: phase === 'approach' ? '-150px' : phase === 'decision' ? '120px' : '400px', /* Posizione dinamica */
+                                right: phase === 'approach' ? '-150px' : phase === 'decision' ? '120px' : '400px', 
                                 transition: phase === 'approach' ? 'right 1s linear' : phase === 'result' ? 'right 0.5s linear' : 'none'
                             }}
                         >
