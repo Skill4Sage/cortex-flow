@@ -7,14 +7,19 @@
     <meta name="description" content="Allenamento cognitivo quotidiano">
     <meta name="theme-color" content="#0f172a">
     
+    <!-- Meta tags per simulare App Nativa su Android/iOS -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
+    <!-- Icona App -->
     <link rel="icon" type="image/png" href="https://img.icons8.com/fluency/96/brain.png">
     <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/96/brain.png">
+
+    <!-- Manifest integrato per installazione PWA -->
     <link rel="manifest" href='data:application/manifest+json,{"name":"Cortex Flow","short_name":"Cortex","start_url":".","display":"standalone","background_color":"#0f172a","theme_color":"#0f172a","icons":[{"src":"https://img.icons8.com/fluency/192/brain.png","sizes":"192x192","type":"image/png"}]}'>
 
+    <!-- Librerie Core (React, Babel, Tailwind) -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -34,6 +39,8 @@
         }
 
         .font-mono { font-family: 'JetBrains Mono', monospace; }
+        
+        /* Animazioni fluide */
         .animate-enter { animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .animate-pop { animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .animate-shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
@@ -55,7 +62,13 @@
         .body { width: 4px; height: 20px; background: white; border-radius: 2px; }
         .legs { width: 20px; height: 20px; border-top: 2px solid white; border-radius: 50% 50% 0 0; margin-top: -2px; }
         @keyframes walkIn { 0% { transform: translateX(-180px); opacity: 1; z-index: 30; } 80% { transform: translateX(0); opacity: 1; z-index: 30; } 81% { z-index: 10; } 100% { transform: translateX(0) scale(0.8); opacity: 0; z-index: 10; } }
-        @keyframes walkOut { 0% { transform: translateX(0) scale(0.8); opacity: 0; z-index: 10; } 20% { transform: translateX(0); opacity: 1; z-index: 30; } 100% { transform: translateX(180px); opacity: 1; z-index: 30; } }
+        /* Modificato walkOut per far sparire l'omino alla fine */
+        @keyframes walkOut { 
+            0% { transform: translateX(0) scale(0.8); opacity: 0; z-index: 10; } 
+            20% { transform: translateX(0); opacity: 1; z-index: 30; } 
+            90% { opacity: 1; }
+            100% { transform: translateX(180px); opacity: 0; z-index: 30; } 
+        }
         .anim-in { animation: walkIn 1.5s linear forwards; }
         .anim-out { animation: walkOut 1.5s linear forwards; }
 
@@ -143,10 +156,10 @@
                     n2 = Math.floor(Math.random() * 11);
                     ans = n1 * n2;
                 } else if (op === '÷') {
-                    // Divisioni intere da tabelline (es 72 / 8 = 9)
-                    n2 = Math.floor(Math.random() * 10) + 1; // Divisore 1-10
-                    ans = Math.floor(Math.random() * 11); // Risultato 0-10
-                    n1 = n2 * ans; // Dividendo
+                    // Divisioni intere da tabelline
+                    n2 = Math.floor(Math.random() * 10) + 1; 
+                    ans = Math.floor(Math.random() * 11); 
+                    n1 = n2 * ans;
                 }
 
                 setQ({ t: `${n1} ${op} ${n2}`, a: ans });
@@ -350,12 +363,17 @@
             const [options, setOptions] = useState([]);
             const [animState, setAnimState] = useState('run');
             const TOTAL = 20;
+            const timerRef = useRef(null);
 
-            useEffect(() => spawnObstacle(), []);
+            useEffect(() => {
+                spawnObstacle();
+                return () => clearTimeout(timerRef.current);
+            }, []);
 
             const spawnObstacle = () => {
                 setAnimState('run');
                 setState('running');
+                
                 const n1 = Math.floor(Math.random() * 20) + 1;
                 let n2 = Math.floor(Math.random() * 20) + 1;
                 while(n2 === n1) n2 = Math.floor(Math.random() * 20) + 1;
@@ -366,14 +384,32 @@
                     nums.push(n3);
                 }
                 setOptions(nums.sort(() => Math.random() - 0.5));
-                setTimeout(() => setState('obstacle'), 1000);
+                
+                setTimeout(() => {
+                    setState('obstacle');
+                    // Timeout automatico: se l'utente non preme nulla, perde
+                    timerRef.current = setTimeout(() => {
+                        handleMiss();
+                    }, 3000 - (difficulty * 200)); // Tempo diminuisce con difficoltà
+                }, 1000);
+            };
+
+            const handleMiss = () => {
+                setAnimState('stumble');
+                setTimeout(() => {
+                    if (count >= TOTAL) onComplete(score);
+                    else { setCount(c => c + 1); spawnObstacle(); }
+                }, 800);
             };
 
             const handleTap = (val) => {
                 if(state !== 'obstacle') return;
+                clearTimeout(timerRef.current); // Ferma il timer del "miss"
+                
                 const max = Math.max(...options);
                 if(val === max) { setAnimState('jump'); setScore(s => s + (10 * difficulty)); }
                 else { setAnimState('stumble'); }
+                
                 setTimeout(() => {
                     if(count >= TOTAL) onComplete(score + (val === max ? 10*difficulty : 0));
                     else { setCount(c => c + 1); spawnObstacle(); }
